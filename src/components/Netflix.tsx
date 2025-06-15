@@ -2,7 +2,7 @@ import React from 'react'
 
 const Netflix = () => {
   return (
-    <div>
+    <div className='bg-black'>
       Netflix 
     </div>
   )
