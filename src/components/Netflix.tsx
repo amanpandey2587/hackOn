@@ -1,9 +1,12 @@
-import React from 'react'
-
+// import Browse from './netflix/Browse'
+import MovieDialog from './netflix/MovieDialog'
+import Body from './netflix/Body'
 const Netflix = () => {
+  
   return (
     <div className='bg-black'>
-      Netflix 
+      <Body/>
+      {/* <MovieDialog /> */}
     </div>
   )
 }
