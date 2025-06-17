@@ -1,29 +1,37 @@
-import React, { useState, useEffect } from 'react'
-import { BrowserRouter as Router } from 'react-router-dom'
-import { useAuth, useUser } from '@clerk/clerk-react'
+import React from 'react'
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
+import { useAuth } from '@clerk/clerk-react'
 import Netflix from './components/Netflix'
 import Prime from './components/Prime'
 import Hulu from './components/Hulu'
-import AppLauncher from './components/AppLauncher'
 import AuthScreen from './components/AuthScreen'
+import StreamingShowcase from './components/home/StreamingShowcase'
+import Stream from "./components/home/Stream"
+import Navbar from './components/Navbar'
+import Home from './pages/Home'
+
+
+const AppContent = () => {
+  const location = useLocation()
+  const isHome = location.pathname === '/'
+
+  return (
+    <div className='relative min-h-screen bg-black'>
+      
+      <div className='pt-0'>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/netflix" element={<Netflix />} />
+          <Route path="/prime" element={<Prime />} />
+          <Route path="/hulu" element={<Hulu />} />
+        </Routes>
+      </div>
+    </div>
+  )
+}
 
 function App() {
   const { isSignedIn, isLoaded } = useAuth()
-  const [currentApp, setCurrentApp] = useState<'launcher' | 'netflix' | 'prime' | 'hulu'>('launcher')
-
-
-  const renderCurrentApp = () => {
-    switch (currentApp) {
-      case 'netflix':
-        return <Netflix />
-      case 'prime':
-        return <Prime />
-      case 'hulu':
-        return <Hulu />
-      default:
-        return <AppLauncher onAppSelect={setCurrentApp} />
-    }
-  }
 
   if (!isLoaded) {
     return (
@@ -39,17 +47,7 @@ function App() {
 
   return (
     <Router>
-      <div className='relative'>
-        {renderCurrentApp()}
-        {currentApp !== 'launcher' && (
-          <button 
-            onClick={() => setCurrentApp('launcher')}
-            className='fixed z-50 top-4 right-72 w-10 h-10 cursor-pointer bg-black bg-opacity-50 rounded-full flex items-center justify-center text-white hover:bg-opacity-70 transition-all duration-200 text-xl font-bold'
-          >
-            Back
-          </button>
-        )}
-      </div>
+      <AppContent />
     </Router>
   )
 }

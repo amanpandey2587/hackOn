@@ -6,7 +6,7 @@ import useTopRatedMovies from "../../hooks/useTopRatedMoviesNerflix";
 import useUpcomingMovies from "../../hooks/useUpcomingMoviesNetflix";
 import SearchMovie from "./SearchMovie";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import Header from "./Header";
 import MainContainer from "./MainContrainer";
 import MovieContainer from "./MovieContainer";
@@ -64,8 +64,6 @@ interface MovieDetailsCache {
 }
 
 const transformWatchmodeToMovie = (watchmodeData: any): Movie => {
-    // console.log('Transforming movie data:', watchmodeData); 
-    
     return {
         id: watchmodeData.id?.toString() || watchmodeData.tmdb_id?.toString() || '',
         title: watchmodeData.title || watchmodeData.original_title || watchmodeData.name || '',
@@ -203,6 +201,8 @@ const Browse = () => {
     const [isLoadingDetails, setIsLoadingDetails] = useState<boolean>(false);
     const [detailsError, setDetailsError] = useState<string | null>(null);
     
+    const [detailsFetched, setDetailsFetched] = useState<Set<string>>(new Set());
+    
     const detailsCacheRef = useRef<MovieDetailsCache>({});
     const loadingPromisesRef = useRef<Map<string, Promise<WatchmodeMovieDetails | null>>>(new Map());
 
@@ -238,19 +238,16 @@ const Browse = () => {
     const fetchMovieDetails = async (movieId: string): Promise<WatchmodeMovieDetails | null> => {
         const cached = getDetailsFromCache(movieId);
         if (cached) {
-            // console.log(`Using cached details for movie ${movieId}`);
             return cached;
         }
 
         if (loadingPromisesRef.current.has(movieId)) {
-            // console.log(`Already loading details for movie ${movieId}, waiting for existing promise`);
             return loadingPromisesRef.current.get(movieId)!;
         }
 
         const loadingPromise = (async (): Promise<WatchmodeMovieDetails | null> => {
             try {
-                const url = `${WATCHMODE_BASE_URL}/title/${movieId}/details/?apiKey=wOdG2B7Dgiy9fsosKaDdF4hv89nWRNxN3dnMD3Ba`;
-                // console.log(`Fetching details from: ${url}`);
+                const url = `${WATCHMODE_BASE_URL}/title/${movieId}/details/?apiKey=${WATCHMODE_API_KEY}`;
                 
                 const response = await fetch(url);
                 
@@ -259,7 +256,6 @@ const Browse = () => {
                 }
                 
                 const json: WatchmodeMovieDetails = await response.json();
-                // console.log(`Movie details fetched for ${movieId}:`, json);
                 
                 storeDetailsInCache(movieId, json);
                 
@@ -277,14 +273,19 @@ const Browse = () => {
         return loadingPromise;
     };
 
-    const fetchMovieDetailsForList = async (movies: Movie[], categoryKey: keyof typeof transformedMovies): Promise<void> => {
+    const fetchMovieDetailsForList = useCallback(async (movies: Movie[]): Promise<void> => {
         if (!movies || movies.length === 0) return;
+
+        const moviesToFetch = movies
+            .slice(0, 20)
+            .filter(movie => !detailsFetched.has(movie.id));
+
+        if (moviesToFetch.length === 0) return;
 
         setIsLoadingDetails(true);
         setDetailsError(null);
 
         try {
-            const moviesToFetch = movies.slice(0, 20);
             const detailsPromises = moviesToFetch.map(movie => 
                 fetchMovieDetails(movie.id).then(details => ({
                     movieId: movie.id,
@@ -295,20 +296,15 @@ const Browse = () => {
             const results = await Promise.allSettled(detailsPromises);
             
             const newMovieDetails: {[key: string]: WatchmodeMovieDetails} = {};
-            const updatedMovies: Movie[] = [...movies]; 
+            const processedMovieIds = new Set<string>();
             
-            results.forEach((result, index) => {
+            results.forEach((result) => {
                 if (result.status === 'fulfilled' && result.value.details) {
                     const movieId = result.value.movieId;
                     const details = result.value.details;
                     
                     newMovieDetails[movieId] = details;
-                    
-                    updatedMovies.forEach((movie, movieIndex) => {
-                        if (movie.id === movieId) {
-                            updatedMovies[movieIndex] = mergeMovieDetails(movie, details);
-                        }
-                    });
+                    processedMovieIds.add(movieId);
                 }
             });
 
@@ -317,10 +313,7 @@ const Browse = () => {
                 ...newMovieDetails
             }));
 
-            setTransformedMovies(prev => ({
-                ...prev,
-                [categoryKey]: updatedMovies
-            }));
+            setDetailsFetched(prev => new Set([...prev, ...processedMovieIds]));
 
             setTransformedMovies(prev => {
                 const updatedState = { ...prev };
@@ -329,11 +322,10 @@ const Browse = () => {
                     const details = newMovieDetails[movieId];
                     
                     Object.keys(updatedState).forEach(category => {
-                        if (category !== categoryKey) {
-                            updatedState[category as keyof typeof updatedState] = updatedState[category as keyof typeof updatedState].map(movie => 
-                                movie.id === movieId ? mergeMovieDetails(movie, details) : movie
-                            );
-                        }
+                        const categoryKey = category as keyof typeof updatedState;
+                        updatedState[categoryKey] = updatedState[categoryKey].map(movie => 
+                            movie.id === movieId ? mergeMovieDetails(movie, details) : movie
+                        );
                     });
                 });
                 
@@ -346,7 +338,7 @@ const Browse = () => {
         } finally {
             setIsLoadingDetails(false);
         }
-    };
+    }, [detailsFetched]);
 
     useEffect(() => {
         const cleanupInterval = setInterval(() => {
@@ -378,8 +370,6 @@ const Browse = () => {
     useEffect(() => {
         const transformAndCacheMovies = async () => {
             try {
-                // console.log('Original data:', { nowPlayingMovies, popularMovies, topRatedMovies, upcomingMovies });
-                
                 const cachedNowPlaying = getFromCache(CACHE_KEYS.NOW_PLAYING);
                 const cachedPopular = getFromCache(CACHE_KEYS.POPULAR);
                 const cachedTopRated = getFromCache(CACHE_KEYS.TOP_RATED);
@@ -392,32 +382,34 @@ const Browse = () => {
                     upcoming: cachedUpcoming || []
                 };
 
+                let hasNewData = false;
+
                 if (nowPlayingMovies && !cachedNowPlaying) {
                     const transformed = nowPlayingMovies.map(transformWatchmodeToMovie);
-                    // console.log('Transformed now playing:', transformed);
                     transformedData.nowPlaying = applyCachedDetailsToMovies(transformed);
                     setCache(CACHE_KEYS.NOW_PLAYING, transformed);
+                    hasNewData = true;
                 }
 
                 if (popularMovies && !cachedPopular) {
                     const transformed = popularMovies.map(transformWatchmodeToMovie);
-                    // console.log('Transformed popular:', transformed);
                     transformedData.popular = applyCachedDetailsToMovies(transformed);
                     setCache(CACHE_KEYS.POPULAR, transformed);
+                    hasNewData = true;
                 }
 
                 if (topRatedMovies && !cachedTopRated) {
                     const transformed = topRatedMovies.map(transformWatchmodeToMovie);
-                    // console.log('Transformed top rated:', transformed);
                     transformedData.topRated = applyCachedDetailsToMovies(transformed);
                     setCache(CACHE_KEYS.TOP_RATED, transformed);
+                    hasNewData = true;
                 }
 
                 if (upcomingMovies && !cachedUpcoming) {
                     const transformed = upcomingMovies.map(transformWatchmodeToMovie);
-                    // console.log('Transformed upcoming:', transformed);
                     transformedData.upcoming = applyCachedDetailsToMovies(transformed);
                     setCache(CACHE_KEYS.UPCOMING, transformed);
+                    hasNewData = true;
                 }
 
                 if (cachedNowPlaying) {
@@ -433,7 +425,13 @@ const Browse = () => {
                     transformedData.upcoming = applyCachedDetailsToMovies(cachedUpcoming);
                 }
 
-                setTransformedMovies(transformedData);
+                if (hasNewData || 
+                    transformedData.nowPlaying.length > 0 || 
+                    transformedData.popular.length > 0 || 
+                    transformedData.topRated.length > 0 || 
+                    transformedData.upcoming.length > 0) {
+                    setTransformedMovies(transformedData);
+                }
             } catch (error) {
                 console.error('Error transforming movies:', error);
             }
@@ -442,30 +440,24 @@ const Browse = () => {
         transformAndCacheMovies();
     }, [nowPlayingMovies, popularMovies, topRatedMovies, upcomingMovies]);
 
-    // Fetch movie details when movies are loaded - for all categories
     useEffect(() => {
-        if (transformedMovies.popular.length > 0) {
-            fetchMovieDetailsForList(transformedMovies.popular, 'popular');
-        }
-    }, [transformedMovies.popular]);
+        const allMovies = [
+            ...transformedMovies.popular,
+            ...transformedMovies.nowPlaying,
+            ...transformedMovies.topRated,
+            ...transformedMovies.upcoming
+        ];
 
-    useEffect(() => {
-        if (transformedMovies.nowPlaying.length > 0) {
-            fetchMovieDetailsForList(transformedMovies.nowPlaying, 'nowPlaying');
+        if (allMovies.length > 0) {
+            fetchMovieDetailsForList(allMovies);
         }
-    }, [transformedMovies.nowPlaying]);
-
-    useEffect(() => {
-        if (transformedMovies.topRated.length > 0) {
-            fetchMovieDetailsForList(transformedMovies.topRated, 'topRated');
-        }
-    }, [transformedMovies.topRated]);
-
-    useEffect(() => {
-        if (transformedMovies.upcoming.length > 0) {
-            fetchMovieDetailsForList(transformedMovies.upcoming, 'upcoming');
-        }
-    }, [transformedMovies.upcoming]);
+    }, [
+        transformedMovies.popular.length,
+        transformedMovies.nowPlaying.length,
+        transformedMovies.topRated.length,
+        transformedMovies.upcoming.length,
+        fetchMovieDetailsForList
+    ]);
 
     useEffect(() => {
         const loadedCategories = [

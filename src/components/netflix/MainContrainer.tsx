@@ -86,10 +86,10 @@ const MainContainer = ({ movies, movieDetails, fetchMovieDetails }: MainContaine
     <div className="relative min-h-screen bg-black">
       <div className="relative h-screen">
         <div className="absolute inset-0">
-          {selectedMovie.backdrop_path ? (
+          {selectedMovie.poster_path ? (
             <div className="relative w-full h-full">
               <img
-                src={selectedMovie.backdrop_path}
+                src={selectedMovie.poster_path}
                 alt={selectedMovie.title}
                 className="w-full h-full object-cover"
               />
@@ -175,7 +175,7 @@ const MainContainer = ({ movies, movieDetails, fetchMovieDetails }: MainContaine
         <div className="absolute top-1/2 transform -translate-y-1/2 left-4 z-50">
           <button
             onClick={() => handleMovieSelection(selectedMovieIndex === 0 ? movies.length - 1 : selectedMovieIndex - 1)}
-            className="bg-black bg-opacity-50 hover:bg-opacity-75 text-white p-3 rounded-full transition-all duration-200"
+            className="bg-black bg-opacity-50 cursor-pointer hover:bg-opacity-75 text-white p-3 rounded-full transition-all duration-200"
             disabled={movies.length <= 1}
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -187,7 +187,7 @@ const MainContainer = ({ movies, movieDetails, fetchMovieDetails }: MainContaine
         <div className="absolute top-1/2 transform -translate-y-1/2 right-4 z-50">
           <button
             onClick={() => handleMovieSelection(selectedMovieIndex === movies.length - 1 ? 0 : selectedMovieIndex + 1)}
-            className="bg-black bg-opacity-50 hover:bg-opacity-75 text-white p-3 rounded-full transition-all duration-200"
+            className="bg-black bg-opacity-50 cursor-pointer hover:bg-opacity-75 text-white p-3 rounded-full transition-all duration-200"
             disabled={movies.length <= 1}
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

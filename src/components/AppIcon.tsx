@@ -34,7 +34,7 @@ const AppIcon: React.FC<AppIconProps> = ({ platform, onClick }) => {
       onClick={onClick}
       className="relative cursor-pointer transform hover:scale-105 transition-all duration-300 group"
     >
-      <div className={`w-32 h-32 bg-gradient-to-br ${config.colors} rounded-3xl shadow-2xl flex items-center justify-center relative overflow-hidden`}>
+      <div className={`w-10 h-10 bg-gradient-to-br ${config.colors} rounded-3xl shadow-2xl flex items-center justify-center relative overflow-hidden`}>
         <div className="text-white text-xl font-bold tracking-wider">
           {config.name.toUpperCase()}
         </div>

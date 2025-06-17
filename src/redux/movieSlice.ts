@@ -1,7 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
-// Define the Movie interface
 interface Movie {
   id: string;
   title: string;
@@ -12,13 +11,11 @@ interface Movie {
   vote_average?: number;
 }
 
-// Cache interface for tracking fetch timestamps
 interface CacheInfo {
   lastFetched: number;
   isLoading: boolean;
 }
 
-// Define the state interface
 interface MovieState {
   nowPlayingMovies: Movie[] | null;
   popularMovies: Movie[] | null;
@@ -28,14 +25,13 @@ interface MovieState {
   trailerMovie: any | null;
   open: boolean;
   id: string;
-  // Caching states
+  selectedMovie:Movie|null,
   cache: {
     nowPlaying: CacheInfo;
     popular: CacheInfo;
     topRated: CacheInfo;
     upcoming: CacheInfo;
   };
-  // Loading states
   loading: {
     nowPlaying: boolean;
     popular: boolean;
@@ -54,6 +50,7 @@ const initialState: MovieState = {
   trailerMovie: null,
   open: false,
   id: "",
+  selectedMovie:null,
   cache: {
     nowPlaying: { lastFetched: 0, isLoading: false },
     popular: { lastFetched: 0, isLoading: false },
@@ -69,14 +66,12 @@ const initialState: MovieState = {
   error: null,
 };
 
-// Cache duration in milliseconds (30 minutes)
-const CACHE_DURATION = 30 * 60 * 1000;
+const CACHE_DURATION = 300 * 60 * 1000;
 
 const movieSlice = createSlice({
   name: "movie",
   initialState,
   reducers: {
-    // Loading states
     setNowPlayingLoading: (state, action: PayloadAction<boolean>) => {
       state.loading.nowPlaying = action.payload;
       state.cache.nowPlaying.isLoading = action.payload;
@@ -97,7 +92,6 @@ const movieSlice = createSlice({
       state.cache.upcoming.isLoading = action.payload;
     },
 
-    // Data setters with cache update
     getNowPlayingMovies: (state, action: PayloadAction<Movie[]>) => {
       state.nowPlayingMovies = action.payload;
       state.cache.nowPlaying.lastFetched = Date.now();
@@ -130,10 +124,8 @@ const movieSlice = createSlice({
       state.error = null;
     },
 
-    // Error handling
     setError: (state, action: PayloadAction<string>) => {
       state.error = action.payload;
-      // Reset all loading states on error
       state.loading = {
         nowPlaying: false,
         popular: false,
@@ -146,7 +138,6 @@ const movieSlice = createSlice({
       state.cache.upcoming.isLoading = false;
     },
 
-    // Clear cache (useful for force refresh)
     clearCache: (state) => {
       state.cache = {
         nowPlaying: { lastFetched: 0, isLoading: false },
@@ -156,7 +147,6 @@ const movieSlice = createSlice({
       };
     },
 
-    // Existing reducers
     setToggle: (state) => {
       state.toggle = !state.toggle;
     },
@@ -171,7 +161,10 @@ const movieSlice = createSlice({
     
     getId: (state, action: PayloadAction<string>) => {
       state.id = action.payload;
-    }
+    },
+    setSelectedMovie: (state, action: PayloadAction<Movie>) => {
+         state.selectedMovie = action.payload;
+    },
   }
 });
 
@@ -189,18 +182,17 @@ export const {
   setToggle,
   getTrailerMovie,
   setOpen,
-  getId
+  getId,
+  setSelectedMovie
 } = movieSlice.actions;
 
 export default movieSlice.reducer;
 
-// Helper function to check if data should be fetched
 export const shouldFetchData = (lastFetched: number, isLoading: boolean, data: any) => {
   const now = Date.now();
   return !isLoading && (!data || (now - lastFetched > CACHE_DURATION));
 };
 
-// Specific helper functions for each data type
 export const shouldFetchNowPlaying = (state: MovieState) => {
   return shouldFetchData(
     state.cache.nowPlaying.lastFetched,
