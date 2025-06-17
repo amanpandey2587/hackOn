@@ -29,6 +29,7 @@ const AppContent = () => {
     </div>
   )
 }
+import Karaoke_Mode from './components/Karaoke_Mode'
 
 function App() {
   const { isSignedIn, isLoaded } = useAuth()
@@ -49,6 +50,9 @@ function App() {
     <Router>
       <AppContent />
     </Router>
+  //  <div className='relative'>
+  //     <Karaoke_Mode />
+  //  </div>
   )
 }
 
