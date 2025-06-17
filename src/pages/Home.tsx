@@ -3,6 +3,7 @@ import Navbar from '../components/Navbar'
 import StreamingShowcase from '../components/home/StreamingShowcase'
 import StreamingPlatform from '../components/StreamingPlatform'
 import WatchMovies from '../components/WatchMovies'
+import Karaoke_Mode from '../components/Karaoke_Mode'
 const Home = () => {
   return (
     <div className=''>
@@ -11,6 +12,7 @@ const Home = () => {
       <Navbar/>
       </div>
       <StreamingShowcase/>
+      <Karaoke_Mode/>
       {/* <StreamingPlatform/> */}
       {/* <WatchMovies/> */}
     </div>
