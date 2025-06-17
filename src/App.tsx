@@ -6,6 +6,7 @@ import Prime from './components/Prime'
 import Hulu from './components/Hulu'
 import AppLauncher from './components/AppLauncher'
 import AuthScreen from './components/AuthScreen'
+import Karaoke_Mode from './components/Karaoke_Mode'
 
 function App() {
   const { isSignedIn, isLoaded } = useAuth()
@@ -51,6 +52,9 @@ function App() {
         )}
       </div>
     </Router>
+  //  <div className='relative'>
+  //     <Karaoke_Mode />
+  //  </div>
   )
 }
 
