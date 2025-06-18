@@ -17,6 +17,7 @@ export const setupSocket = (io: Server) => {
       });
 
       const userId = payload.userId || payload.sub;
+      console.log("User id is ",userId)
       if (!userId) {
         console.error("❌ No userId or sub in JWT payload:", payload);
         return next(new Error("Invalid token payload"));
