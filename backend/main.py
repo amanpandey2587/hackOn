@@ -14,6 +14,7 @@ classifier = CustomEncoderWav2vec2Classifier.from_hparams(
 )
 
 emotions = {0: 'Neutral', 1: 'Anger', 2: 'Happiness', 3: 'Sadness'}
+
 emotion_codes = ['neu', 'ang', 'hap', 'sad']
 
 @app.post("/analyze-emotion/")
