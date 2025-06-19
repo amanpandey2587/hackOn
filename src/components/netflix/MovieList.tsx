@@ -9,6 +9,8 @@ interface Movie {
   backdrop_path?: string;
   release_date?: string;
   vote_average?: number;
+  genre_names:string[],
+  runtime_minutes?:number;
 }
 
 interface MovieListProps {
@@ -131,6 +133,8 @@ const MovieList: React.FC<MovieListProps> = ({
                   title={movie.title}
                   rating={movie.vote_average}
                   releaseDate={movie.release_date}
+                  genre={movie.genre_names}
+                  totalDuration={movie.runtime_minutes}
                 />
               ))}
             </div>

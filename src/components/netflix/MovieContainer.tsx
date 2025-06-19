@@ -10,6 +10,8 @@ interface Movie {
     backdrop_path?: string;
     release_date?: string;
     vote_average?: number;
+    genre_names:string[],
+    runtime_minutes?:number;
 }
 
 // Define props interface

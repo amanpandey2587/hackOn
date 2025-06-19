@@ -1,6 +1,6 @@
 import mongoose,{Document,Schema} from "mongoose";
 interface WatchHistoryDocument extends Document{
-    id:string;
+    id:string,
     userId:string;
     contentId:string; //watchmode contetn id
     contentType:"movie"|"tv"|"episode";
@@ -13,13 +13,16 @@ interface WatchHistoryDocument extends Document{
     genre:string[];
     rating:number;
     releaseYear:number;
+    episodeNumber:number;
+    seasonNumber:number;
+    streamingService:string;
     createdAt:Date;
     updatedAt:Date;
 
 }
 
 const WatchHistorySchema=new Schema<WatchHistoryDocument>({
-    id:{type:String,required:true,unique:true},
+    id:{type:String,required:true},
     userId:{type:String,required:true},
     contentId:{type:String,required:true},
     contentType:{
@@ -35,6 +38,9 @@ const WatchHistorySchema=new Schema<WatchHistoryDocument>({
     completed:{type:Boolean,default:false},
     genre:{type:[String],default:[]},
     rating:{type:Number,default:0},
+    seasonNumber:{type:Number,default:0},
+    episodeNumber:{type:Number,default:0},
+    streamingService:{type:String,default:""},
     releaseYear:{type:Number,required:true},
 },{timestamps:true})
 

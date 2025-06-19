@@ -62,14 +62,14 @@ const Stream: React.FC<StreamProps> = ({
     fetchByPlatform();
   }, [platform, contentType]);
 
-  console.log('Content from hook:', content);
-  console.log('Loading:', loading);
-  console.log('Error:', error);
-  console.log('HasContent:', hasContent);
-  console.log('IsEmpty:', isEmpty);
+  // console.log('Content from hook:', content);
+  // console.log('Loading:', loading);
+  // console.log('Error:', error);
+  // console.log('HasContent:', hasContent);
+  // console.log('IsEmpty:', isEmpty);
 
   const displayContent = content.slice(0, 7);
-  console.log('Display content:', displayContent);
+  // console.log('Display content:', displayContent);
 
   if (loading && !hasContent) {
     return (
@@ -163,11 +163,11 @@ const Stream: React.FC<StreamProps> = ({
         }}
         loop={displayContent.length > 1}
         className="h-full w-full"
-        onSwiper={(swiper) => console.log('Swiper initialized:', swiper)}
-        onSlideChange={() => console.log('Slide changed')}
+        // onSwiper={(swiper) => console.log('Swiper initialized:', swiper)}
+        // onSlideChange={() => console.log('Slide changed')}
       >
         {displayContent.length > 0 ? displayContent.map((item: any, index: number) => {
-          console.log(`Rendering slide ${index}:`, item);
+          // console.log(`Rendering slide ${index}:`, item);
           return (
             <SwiperSlide key={item.id || index}>
               <div className="relative h-full w-full bg-gray-800">

@@ -9,6 +9,8 @@ interface MovieCardProps {
   title?: string;
   rating?: number;
   releaseDate?: string;
+  genre:string[] | undefined;
+  totalDuration?:number;
 }
 
 const MovieCard: React.FC<MovieCardProps> = ({
@@ -16,7 +18,8 @@ const MovieCard: React.FC<MovieCardProps> = ({
   movieId,
   title,
   rating,
-  releaseDate
+  releaseDate,
+  genre,totalDuration,
 }) => {
   const dispatch = useDispatch();
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -157,6 +160,8 @@ const MovieCard: React.FC<MovieCardProps> = ({
           title={title}
           rating={rating}
           releaseDate={releaseDate}
+          totalDuration={totalDuration}
+          genre={genre}
         />
       )}
     </>
