@@ -30,3 +30,4 @@ const PreferencesSchema=new Schema<PreferencesDocument>({
 },{timestamps:true});
 
 const Preferences=mongoose.model<PreferencesDocument>("Preferences",PreferencesSchema);
+export default Preferences

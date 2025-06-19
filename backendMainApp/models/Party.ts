@@ -1,12 +1,9 @@
-// backendMainApp/models/Party.ts
 import { Schema, model, Document } from "mongoose";
-
 interface IPartyMember {
   userId: string;
   username: string;
   joinedAt: Date;
 }
-
 interface IParty extends Document {
   title: string;
   isPrivate: boolean;
@@ -17,8 +14,8 @@ interface IParty extends Document {
     username: string;
   };
   createdAt: Date;
+  tags: string[]; 
 }
-
 const PartySchema = new Schema<IParty>({
   title: { 
     type: String, 
@@ -48,7 +45,17 @@ const PartySchema = new Schema<IParty>({
   createdAt: { 
     type: Date, 
     default: Date.now 
+  },
+  tags: {
+    type: [String],
+    default: [],
+    validate: {
+      validator: function(arr: string[]) {
+        // No strict validation here, main validation will be in routes (so you can change allowed tags live)
+        return Array.isArray(arr) && arr.every(tag => typeof tag === "string");
+      },
+      message: "tags must be an array of strings"
+    }
   }
 });
-
 export const Party = model<IParty>("Party", PartySchema);

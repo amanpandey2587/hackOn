@@ -13,7 +13,6 @@ const useTopRatedMovies = () => {
     }));
     
     useEffect(() => {
-        // Only fetch if we don't have data and we're not already loading
         if (!topRatedMovies && !loading) {
             const fetchTopRatedMovies = async () => {
                 dispatch(setTopRatedLoading(true));
@@ -31,7 +30,7 @@ const useTopRatedMovies = () => {
             
             fetchTopRatedMovies();
         }
-    }, []); // Empty dependency array - only run once on mount
+    }, []); 
 };
 
 export default useTopRatedMovies;

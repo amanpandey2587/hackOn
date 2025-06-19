@@ -40,14 +40,15 @@ export const setupSocket = (io: Server) => {
       socket.join(partyId);
     });
 
-    socket.on("sendMessage", async ({ partyId, content }) => {
-      const sender = socket.data.user;
-      console.log("💬 Saving message:", { partyId, sender, content });
+    socket.on("sendMessage", async ({ partyId, sender, senderName, content }) => {
+      // Note: sender is the username, senderName is the full name from Clerk
+      console.log("💬 Saving message:", { partyId, sender, senderName, content });
 
       try {
         const msg = await Message.create({
           partyId,
           sender,
+          senderName,  // Save the sender's name
           content,
         });
 
@@ -55,6 +56,7 @@ export const setupSocket = (io: Server) => {
 
         io.to(partyId).emit("receiveMessage", {
           sender,
+          senderName,  // Include senderName in the emitted message
           content,
           timestamp: msg.timestamp,
         });

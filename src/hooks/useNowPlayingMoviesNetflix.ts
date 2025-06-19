@@ -13,7 +13,6 @@ const useNowPlayingMovies = () => {
     }));
     
     useEffect(() => {
-        // Only fetch if we don't have data and we're not already loading
         if (!nowPlayingMovies && !loading) {
             const fetchNowPlayingMovies = async () => {
                 dispatch(setNowPlayingLoading(true));
@@ -31,7 +30,7 @@ const useNowPlayingMovies = () => {
             
             fetchNowPlayingMovies();
         }
-    }, []); // Empty dependency array - only run once on mount
+    }, []);
 };
 
 export default useNowPlayingMovies;

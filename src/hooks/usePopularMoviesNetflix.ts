@@ -13,7 +13,6 @@ const usePopularMovies = () => {
     }));
     
     useEffect(() => {
-        // Only fetch if we don't have data and we're not already loading
         if (!popularMovies && !loading) {
             const fetchPopularMovies = async () => {
                 dispatch(setPopularLoading(true));
@@ -32,7 +31,7 @@ const usePopularMovies = () => {
             
             fetchPopularMovies();
         }
-    }, []); // Empty dependency array - only run once on mount
+    }, []);
 };
 
 export default usePopularMovies;
