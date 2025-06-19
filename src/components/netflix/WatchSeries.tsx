@@ -177,6 +177,7 @@ const WatchSeries: React.FC<WatchSeriesProps> = ({ isOpen, onClose, show }) => {
     });
   }, [player, volume, isMuted]);
 
+  // Fetch trailer from YouTube API
   const fetchTrailer = useCallback(async (title: string, season?: number, episode?: number): Promise<TrailerData | null> => {
     const searchQuery = episode 
       ? `${title} season ${season} episode ${episode} trailer`
