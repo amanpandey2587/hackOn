@@ -12,6 +12,8 @@ import Home from './pages/Home';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { partyService } from "./services/PartyService";
+import type { Party } from "./services/PartyService";
+import BrowseSeries from "./components/netflix/BrowseSeries";
 const AppContent = () => {
   const location = useLocation();
   
@@ -23,6 +25,7 @@ const AppContent = () => {
           <Route path="/netflix" element={<Netflix />} />
           <Route path="/prime" element={<Prime />} />
           <Route path="/hulu" element={<Hulu />} />
+          <Route path="/netflix/series" element={<BrowseSeries/>} />
         </Routes>
       </div>
     </div>
@@ -105,247 +108,247 @@ function App() {
     </Router>
   );
 }
+export default App
+// function ChatPanelImplement() {
+//   const { user } = useUser();
+//   const { isSignedIn, isLoaded } = useAuth();
+//   const [currentApp, setCurrentApp] = useState<
+//     "launcher" | "netflix" | "prime" | "hulu"
+//   >("launcher");
 
-function ChatPanelImplement() {
-  const { user } = useUser();
-  const { isSignedIn, isLoaded } = useAuth();
-  const [currentApp, setCurrentApp] = useState<
-    "launcher" | "netflix" | "prime" | "hulu"
-  >("launcher");
+//   // Party state management
+//   const [parties, setParties] = useState<Party[]>([]);
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState<string | null>(null);
+//   const [selectedParty, setSelectedParty] = useState<Party | null>(null);
 
-  // Party state management
-  const [parties, setParties] = useState<Party[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [selectedParty, setSelectedParty] = useState<Party | null>(null);
+//   // Fetch parties from MongoDB
+//   const fetchParties = async () => {
+//     try {
+//       setLoading(true);
+//       setError(null);
+//       const data = await partyService.getParties();
+//       setParties(data);
+//     } catch (err) {
+//       setError(err instanceof Error ? err.message : "Failed to fetch parties");
+//       console.error("Error fetching parties:", err);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
 
-  // Fetch parties from MongoDB
-  const fetchParties = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await partyService.getParties();
-      setParties(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to fetch parties");
-      console.error("Error fetching parties:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+//   useEffect(() => {
+//     if (isSignedIn) {
+//       fetchParties();
 
-  useEffect(() => {
-    if (isSignedIn) {
-      fetchParties();
+//       // Optional: Set up polling to refresh parties every 30 seconds
+//       const interval = setInterval(fetchParties, 30000);
+//       return () => clearInterval(interval);
+//     }
+//   }, [isSignedIn]);
 
-      // Optional: Set up polling to refresh parties every 30 seconds
-      const interval = setInterval(fetchParties, 30000);
-      return () => clearInterval(interval);
-    }
-  }, [isSignedIn]);
-
-  // Handle joining a party (NEW FUNCTION - ADD THIS)
-  const handleJoinParty = async (party: Party) => {
-    try {
-      // Check if already a member
-      const isAlreadyMember = party.members.some(
-        m => m.userId === (user?.id || "anonymous")
-      );
+//   // Handle joining a party (NEW FUNCTION - ADD THIS)
+//   const handleJoinParty = async (party: Party) => {
+//     try {
+//       // Check if already a member
+//       const isAlreadyMember = party.members.some(
+//         m => m.userId === (user?.id || "anonymous")
+//       );
       
-      if (isAlreadyMember) {
-        // Already a member, just open the chat
-        setSelectedParty(party);
-        return;
-      }
+//       if (isAlreadyMember) {
+//         // Already a member, just open the chat
+//         setSelectedParty(party);
+//         return;
+//       }
 
-      // If it's a private party, we need to get the password
-      if (party.isPrivate) {
-        // For now, let's use a simple prompt. You can replace with a proper dialog later
-        const password = window.prompt("This is a private party. Enter password:");
-        if (!password) return;
+//       // If it's a private party, we need to get the password
+//       if (party.isPrivate) {
+//         // For now, let's use a simple prompt. You can replace with a proper dialog later
+//         const password = window.prompt("This is a private party. Enter password:");
+//         if (!password) return;
 
-        // Try to join with password
-        const updatedParty = await partyService.joinParty(party._id, {
-          userId: user?.id || "anonymous",
-          username: user?.username || user?.fullName || "Anonymous",
-          password
-        });
+//         // Try to join with password
+//         const updatedParty = await partyService.joinParty(party._id, {
+//           userId: user?.id || "anonymous",
+//           username: user?.username || user?.fullName || "Anonymous",
+//           password
+//         });
         
-        // Update the party in the list with new member info
-        setParties(prev => prev.map(p => p._id === updatedParty._id ? updatedParty : p));
-        setSelectedParty(updatedParty);
-      } else {
-        // Public party - join directly
-        const updatedParty = await partyService.joinParty(party._id, {
-          userId: user?.id || "anonymous",
-          username: user?.username || user?.fullName || "Anonymous"
-        });
+//         // Update the party in the list with new member info
+//         setParties(prev => prev.map(p => p._id === updatedParty._id ? updatedParty : p));
+//         setSelectedParty(updatedParty);
+//       } else {
+//         // Public party - join directly
+//         const updatedParty = await partyService.joinParty(party._id, {
+//           userId: user?.id || "anonymous",
+//           username: user?.username || user?.fullName || "Anonymous"
+//         });
         
-        // Update the party in the list with new member info
-        setParties(prev => prev.map(p => p._id === updatedParty._id ? updatedParty : p));
-        setSelectedParty(updatedParty);
-      }
-    } catch (error: any) {
-      alert(error.message || "Failed to join party");
-    }
-  };
+//         // Update the party in the list with new member info
+//         setParties(prev => prev.map(p => p._id === updatedParty._id ? updatedParty : p));
+//         setSelectedParty(updatedParty);
+//       }
+//     } catch (error: any) {
+//       alert(error.message || "Failed to join party");
+//     }
+//   };
 
-  // Handle leaving a party (NEW FUNCTION - ADD THIS)
-  const handleLeaveParty = async () => {
-    if (!selectedParty) return;
+//   // Handle leaving a party (NEW FUNCTION - ADD THIS)
+//   const handleLeaveParty = async () => {
+//     if (!selectedParty) return;
     
-    try {
-      // Call the leave endpoint
-      await partyService.leaveParty(
-        selectedParty._id, 
-        user?.id || "anonymous"
-      );
+//     try {
+//       // Call the leave endpoint
+//       await partyService.leaveParty(
+//         selectedParty._id, 
+//         user?.id || "anonymous"
+//       );
       
-      // Refresh parties list to get updated member counts
-      await fetchParties();
+//       // Refresh parties list to get updated member counts
+//       await fetchParties();
       
-      // Clear selected party
-      setSelectedParty(null);
-    } catch (error) {
-      console.error("Failed to leave party:", error);
-      setSelectedParty(null);
-    }
-  };
-  // Add this function to handle leaving without entering chat
+//       // Clear selected party
+//       setSelectedParty(null);
+//     } catch (error) {
+//       console.error("Failed to leave party:", error);
+//       setSelectedParty(null);
+//     }
+//   };
+//   // Add this function to handle leaving without entering chat
 
-  const handleLeavePartyFromSidebar = async (partyId: string) => {
+//   const handleLeavePartyFromSidebar = async (partyId: string) => {
 
-    try {
+//     try {
 
-      await partyService.leaveParty(partyId, user?.id || "anonymous");
+//       await partyService.leaveParty(partyId, user?.id || "anonymous");
 
-      await fetchParties();
+//       await fetchParties();
 
-    } catch (error) {
+//     } catch (error) {
 
-      console.error("Failed to leave party:", error);
+//       console.error("Failed to leave party:", error);
 
-      alert("Failed to leave party");
+//       alert("Failed to leave party");
 
-    }
+//     }
 
-  };
-
-
-  // Add this function to handle entering an already joined party
-
-  const handleEnterParty = (party: Party) => {
-
-    setSelectedParty(party);
-
-  };
+//   };
 
 
-  // Add this function to handle going back to sidebar
+//   // Add this function to handle entering an already joined party
 
-  const handleBackToSidebar = () => {
+//   const handleEnterParty = (party: Party) => {
 
-    setSelectedParty(null);
+//     setSelectedParty(party);
 
-  };
-  // KEEP YOUR EXISTING handleCreateParty function as is
-  const handleCreateParty = async (data: {
-    title: string;
-    isPrivate: boolean;
-    password?: string;
-  }) => {
-    try {
-      const newParty = await partyService.createParty({
-        ...data,
-        userId: user?.id || "anonymous",
-        username: user?.username || user?.fullName || "Anonymous",
-      });
-      await fetchParties();
-      setSelectedParty(newParty);
-    } catch (error) {
-      console.error("Failed to create party:", error);
-      throw error;
-    }
-  };
-
-  const renderCurrentApp = () => {
-    switch (currentApp) {
-      case "netflix":
-        return <Netflix />;
-      case "prime":
-        return <Prime />;
-      case "hulu":
-        return <Hulu />;
-      default:
-        return <AppLauncher onAppSelect={setCurrentApp} />;
-    }
-  };
-
-  if (!isLoaded) {
-    return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="text-white text-xl">Loading...</div>
-      </div>
-    );
-  }
-
-  if (!isSignedIn) {
-    return <AuthScreen />;
-  }
-
-  return (
-    <div className="flex h-screen">
-
-      <div className="flex-1 bg-zinc-900 text-white flex items-center justify-center">
-
-        <h1 className="text-3xl">OTT Platform Content Area</h1>
-
-      </div>
+//   };
 
 
-      {selectedParty ? (
+//   // Add this function to handle going back to sidebar
 
-        <ChatPanel
+//   const handleBackToSidebar = () => {
 
-          partyId={selectedParty._id}
+//     setSelectedParty(null);
 
-          partyName={selectedParty.title}
+//   };
+//   // KEEP YOUR EXISTING handleCreateParty function as is
+//   const handleCreateParty = async (data: {
+//     title: string;
+//     isPrivate: boolean;
+//     password?: string;
+//   }) => {
+//     try {
+//       const newParty = await partyService.createParty({
+//         ...data,
+//         userId: user?.id || "anonymous",
+//         username: user?.username || user?.fullName || "Anonymous",
+//       });
+//       await fetchParties();
+//       setSelectedParty(newParty);
+//     } catch (error) {
+//       console.error("Failed to create party:", error);
+//       throw error;
+//     }
+//   };
 
-          username={user?.username || user?.fullName || user?.id || "anonymous"}
+//   const renderCurrentApp = () => {
+//     switch (currentApp) {
+//       case "netflix":
+//         return <Netflix />;
+//       case "prime":
+//         return <Prime />;
+//       case "hulu":
+//         return <Hulu />;
+//       default:
+//         return <AppLauncher onAppSelect={setCurrentApp} />;
+//     }
+//   };
 
-          onLeave={handleLeaveParty}
+//   if (!isLoaded) {
+//     return (
+//       <div className="min-h-screen bg-black flex items-center justify-center">
+//         <div className="text-white text-xl">Loading...</div>
+//       </div>
+//     );
+//   }
 
-          onBack={handleBackToSidebar} // Add this
+//   if (!isSignedIn) {
+//     return <AuthScreen />;
+//   }
 
-        />
+//   return (
+//     <div className="flex h-screen">
 
-      ) : (
+//       <div className="flex-1 bg-zinc-900 text-white flex items-center justify-center">
 
-        <WatchPartySidebar
+//         <h1 className="text-3xl">OTT Platform Content Area</h1>
 
-          parties={parties}
+//       </div>
 
-          currentUserId={user?.id || "anonymous"} // Add this
 
-          onJoinParty={handleJoinParty}
+//       {selectedParty ? (
 
-          onLeaveParty={handleLeavePartyFromSidebar} // Add this
+//         <ChatPanel
 
-          onEnterParty={handleEnterParty} // Add this
+//           partyId={selectedParty._id}
 
-          onCreateParty={handleCreateParty}
+//           partyName={selectedParty.title}
 
-          loading={loading}
+//           username={user?.username || user?.fullName || user?.id || "anonymous"}
 
-          error={error}
+//           onLeave={handleLeaveParty}
 
-        />
+//           onBack={handleBackToSidebar} // Add this
 
-      )}
+//         />
 
-    </div>
+//       ) : (
 
-  );
-}
+//         <WatchPartySidebar
 
-export default ChatPanelImplement
+//           parties={parties}
+
+//           currentUserId={user?.id || "anonymous"} // Add this
+
+//           onJoinParty={handleJoinParty}
+
+//           onLeaveParty={handleLeavePartyFromSidebar} // Add this
+
+//           onEnterParty={handleEnterParty} // Add this
+
+//           onCreateParty={handleCreateParty}
+
+//           loading={loading}
+
+//           error={error}
+
+//         />
+
+//       )}
+
+//     </div>
+
+//   );
+// }
+
+// export default ChatPanelImplement

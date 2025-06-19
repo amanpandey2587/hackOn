@@ -60,7 +60,7 @@ const WatchMovie: React.FC<WatchMovieProps> = ({
   const controlsTimeoutRef = useRef<number | null>(null);
 
   const WATCH_UPDATE_INTERVAL = 15;
-  const YOUTUBE_API_KEY = "YOUR_YOUTUBE_API_KEY";
+  const YOUTUBE_API_KEY = "";
 
   const addToCache = useCallback((key: string, data: TrailerData) => {
     while (trailerCache.size >= MAX_CACHE_SIZE) {
@@ -199,7 +199,7 @@ const WatchMovie: React.FC<WatchMovieProps> = ({
       const response = await fetch(
         `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(searchQuery)}&type=video&key=${YOUTUBE_API_KEY}&maxResults=1`
       );
-      
+      console.log("Response in the frontend is ",response)
       if (!response.ok) {
         throw new Error(`YouTube API error: ${response.status} ${response.statusText}`);
       }

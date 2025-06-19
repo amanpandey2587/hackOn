@@ -2,13 +2,15 @@ import { IoIosArrowDropdown } from "react-icons/io";
 import { useDispatch, useSelector } from 'react-redux';
 import { setToggle } from '../../redux/movieSlice';
 import { SignedOut, SignInButton, useUser } from '@clerk/clerk-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import type { RootState } from "../../redux/store";
+
 const Header = () => {
     const toggle = useSelector((store: RootState) => store.movie.toggle);
     const dispatch = useDispatch();
     const { user } = useUser();
     const navigate = useNavigate();
+    const location = useLocation();
 
     const toggleHandler = () => {
         dispatch(setToggle());
@@ -18,13 +20,17 @@ const Header = () => {
         navigate('/');
     };
 
+    const goToSeriesHandler = () => {
+        navigate('/netflix/series');
+    };
+
     return (
         <div className='absolute z-10 flex w-full items-center justify-between px-6 bg-gradient-to-b from-black'>
             <img
                 className='w-56 cursor-pointer'
                 src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Netflix_2015_logo.svg/1198px-Netflix_2015_logo.svg.png"
                 alt="netflix-logo"
-                onClick={goHomeHandler} 
+                onClick={goHomeHandler}
             />
             {user && (
                 <div className='flex items-center'>
@@ -50,6 +56,15 @@ const Header = () => {
                         >
                             Go to Home
                         </button>
+
+                        {location.pathname !== '/series' && (
+                            <button
+                                onClick={goToSeriesHandler}
+                                className='bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors'
+                            >
+                                Watch Series
+                            </button>
+                        )}
                     </div>
                 </div>
             )}

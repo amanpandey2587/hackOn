@@ -99,7 +99,7 @@ export const createWatchHistory = async (req: AuthenticatedRequest, res: any) =>
     const existingEntry = await WatchHistory.findOne({
       userId,
       contentId,
-      contentType
+      contentType,seasonNumber,episodeNumber
     });
 
     let watchHistoryData;
@@ -118,7 +118,7 @@ export const createWatchHistory = async (req: AuthenticatedRequest, res: any) =>
       }
     } else {
       const newWatchHistory = new WatchHistory({
-        id: `${userId}_${contentId}`,
+        id: `${userId}_${contentId}_${seasonNumber}_${episodeNumber}`,
         userId,
         contentId,
         contentType,

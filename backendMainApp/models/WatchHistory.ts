@@ -3,7 +3,7 @@ interface WatchHistoryDocument extends Document{
     id:string,
     userId:string;
     contentId:string; //watchmode contetn id
-    contentType:"movie"|"tv"|"episode";
+    contentType:"movie"|"tv"|"episode"|"series";
     title:string;
     watchedAt:Date;
     watchDuration:number;
@@ -27,7 +27,7 @@ const WatchHistorySchema=new Schema<WatchHistoryDocument>({
     contentId:{type:String,required:true},
     contentType:{
         type:String,
-        enum:["movie","tv","episode"],
+        enum:["movie","tv","episode","series"],
         required:true,
     },
     title:{type:String,required:true},

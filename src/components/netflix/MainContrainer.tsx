@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import VideoBackground from './VideoBackground';
-import VideoTitle from './VideoTitle';
+
 
 interface Movie {
   id: string;

@@ -1,10 +1,19 @@
 
 import { configureStore } from '@reduxjs/toolkit';
 import mainContentReducer from './mainContentSlice';
+import userReducer from "./userSlice"
+import movieReducer from './movieSlice'
+import searchSlice from "./searchSlice"
+import netflixTVReducer from './netflixTVSlice'
+
 
 export const store = configureStore({
   reducer: {
     mainContent: mainContentReducer,
+    app:userReducer,
+    movie:movieReducer,
+    searchMovie:searchSlice,
+    netflixTV:netflixTVReducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
