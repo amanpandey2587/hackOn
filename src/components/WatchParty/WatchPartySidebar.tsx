@@ -15,42 +15,24 @@ type Party = {
   isPrivate: boolean;
 };
 type Props = {
-
   parties: Party[];
-
   currentUserId: string; // Add this prop
-
   onJoinParty: (party: Party) => void;
-
   onLeaveParty: (partyId: string) => void; // Add this prop
-
   onEnterParty: (party: Party) => void; // Add this for entering already joined parties
-
   onCreateParty: (data: { title: string; isPrivate: boolean; password?: string }) => Promise<void>;
-
   loading?: boolean;
-
   error?: string | null;
-
 };
 export const WatchPartySidebar = ({ 
-
   parties, 
-
   currentUserId,
-
   onJoinParty, 
-
   onLeaveParty,
-
   onEnterParty,
-
   onCreateParty,
-
   loading, 
-
   error 
-
 }: Props) => {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [newPartyTitle, setNewPartyTitle] = useState("");
@@ -84,79 +66,42 @@ export const WatchPartySidebar = ({
     }
   };
   return (
-
     <>
-
       <Card className="w-80 h-full border-l shadow-md flex flex-col">
-
         <div className="p-4 border-b flex justify-between items-center">
-
           <h2 className="text-lg font-bold">Watch Parties</h2>
-
           <Button 
-
             size="sm" 
-
             variant="ghost" 
-
             onClick={() => setShowCreateDialog(true)}
-
           >
-
             New +
-
           </Button>
-
         </div>
-
         <ScrollArea className="p-4 space-y-2 flex-1">
-
           {loading && (
-
             <div className="text-center py-4 text-gray-500">Loading parties...</div>
-
           )}
-
           {error && (
-
             <div className="text-center py-4 text-red-500">{error}</div>
-
           )}
-
           {!loading && !error && parties.length === 0 && (
-
             <div className="text-center py-4 text-gray-500">No parties available</div>
-
           )}
-
           {!loading && !error && parties.map(p => {
-
             const isJoined = p.members.some(m => m.userId === currentUserId);
-
             return (
-
               <WatchPartyCard 
-
                 key={p._id} 
-
                 {...p} 
-
                 members={p.members.length}
-
                 isJoined={isJoined}
-
                 onJoin={() => isJoined ? onEnterParty(p) : onJoinParty(p)}
-
                 onLeave={isJoined ? () => onLeaveParty(p._id) : undefined}
-
               />
-
             );
-
           })}
-
         </ScrollArea>
-
       </Card>
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
         <DialogContent className="sm:max-w-[425px]">

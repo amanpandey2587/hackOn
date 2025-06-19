@@ -5,16 +5,15 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { MessageBubble } from "./MessageBubble";
 import { connectSocket } from "@/utils/server";
-import { useAuth } from "@clerk/clerk-react";
+import { useAuth, useUser } from "@clerk/clerk-react";
 import { ArrowLeft } from "lucide-react"; 
-
 type Message = {
   _id?: string;
   sender: string;
+  senderName?: string;
   text: string;
   timeStamp?: string;
 };
-
 type ChatPanelProps = {
   partyId: string;
   partyName: string;
@@ -22,7 +21,6 @@ type ChatPanelProps = {
   onLeave: () => void;
   onBack: () => void;
 };
-
 export const ChatPanel = ({
   partyName,
   partyId,
@@ -34,8 +32,8 @@ export const ChatPanel = ({
   const [input, setInput] = useState("");
   const bottomRef = useRef<HTMLDivElement>(null);
   const { getToken } = useAuth();
+  const { user } = useUser();
   const socketRef = useRef<any>(null);
-
   useEffect(() => {
     const fetchMessages = async () => {
       try {
@@ -47,6 +45,7 @@ export const ChatPanel = ({
           data.map(
             (msg: any): Message => ({
               sender: msg.sender,
+              senderName: msg.senderName,
               text: msg.content,
               timeStamp: msg.timestamp
                 ? new Date(msg.timestamp).toLocaleString("en-US", {
@@ -64,28 +63,24 @@ export const ChatPanel = ({
         console.error("Failed to fetch messages", err);
       }
     };
-
     fetchMessages();
-
     let socketInstance: any;
-
     const setupSocket = async () => {
       const token = await getToken({ template: "socket" });
       if (!token) {
         console.error("No Clerk token available, cannot connect socket.");
         return;
       }
-
       socketInstance = connectSocket(token);
       socketRef.current = socketInstance;
       socketInstance.emit("joinParty", partyId);
-
       const receiveHandler = (msg: any) => {
         console.log("📥 receiveMessage received:", msg);
         setMessages((prev) => [
           ...prev,
           {
             sender: msg.sender,
+            senderName: msg.senderName,
             text: msg.content,
             timeStamp: msg.timestamp
               ? new Date(msg.timestamp).toLocaleString("en-US", {
@@ -99,7 +94,6 @@ export const ChatPanel = ({
           },
         ]);
       };
-
       socketInstance.on("receiveMessage", receiveHandler);
       return () => {
         if (socketInstance) {
@@ -109,33 +103,30 @@ export const ChatPanel = ({
         }
       };
     };
-
     let cleanup: (() => void) | undefined;
-
     setupSocket().then((fn) => {
       cleanup = fn;
     });
-
     return () => {
       if (cleanup) cleanup();
     };
   }, [partyId]);
-
-  const sendMessage = () => {
-    if (input.trim()) {
-      socketRef.current?.emit("sendMessage", {
-        partyId,
-        sender: username,
-        content: input,
-      });
-      setInput("");
-    }
-  };
-
+const sendMessage = () => {
+  if (input.trim()) {
+    const emailName = user?.primaryEmailAddress?.emailAddress?.split('@')[0];
+    const displayName = user?.fullName || user?.firstName || emailName || username;
+    socketRef.current?.emit("sendMessage", {
+      partyId,
+      sender: username,  // This is used for identification
+      senderName: displayName,  // This is what will be displayed
+      content: input,
+    });
+    setInput("");
+  }
+};
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
-
   return (
     <Card className="w-96 h-screen border-l shadow-md flex flex-col overflow-hidden">
       <div className="p-3 border-b flex justify-between items-center">
@@ -143,25 +134,22 @@ export const ChatPanel = ({
           <Button size="sm" variant="ghost" onClick={onBack} className="p-1">
             <ArrowLeft className="w-4 h-4" />
           </Button>
-
           <h4 className="font-bold">{partyName}</h4>
         </div>
-
         <Button size="sm" variant="ghost" onClick={onLeave}>
           Leave
         </Button>
       </div>
-
       <ScrollArea className="flex-1 p-3 overflow-y-auto">
         {messages.map((msg, index) => (
           <MessageBubble
             key={index}
             message={msg.text}
             self={msg.sender === username}
+            senderName={msg.senderName}
             timestamp={msg.timeStamp || ""}
           />
         ))}
-
         <div ref={bottomRef} />
       </ScrollArea>
       <div className="border-t p-3 flex gap-2 bg-white">
