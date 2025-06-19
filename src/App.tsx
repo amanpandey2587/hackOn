@@ -11,7 +11,7 @@ import AuthScreen from './components/AuthScreen';
 import Home from './pages/Home';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-
+import { partyService } from "./services/PartyService";
 const AppContent = () => {
   const location = useLocation();
   
@@ -106,7 +106,7 @@ function App() {
   );
 }
 
-function ChatPanel() {
+function ChatPanelImplement() {
   const { user } = useUser();
   const { isSignedIn, isLoaded } = useAuth();
   const [currentApp, setCurrentApp] = useState<
@@ -348,4 +348,4 @@ function ChatPanel() {
   );
 }
 
-export default App
+export default ChatPanelImplement

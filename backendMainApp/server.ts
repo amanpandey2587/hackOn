@@ -10,17 +10,19 @@ import { Server } from "socket.io";
 import http from "http";
 import messageRoutes from "./routes/messages";
 import userProfileRoutes from "./routes/UserProfile"; // 👈 renamed for clarity
-import { requireAuth } from '@clerk/express';
-import watchHistoryRoutes from "./routes/WatchHistory"
+import { requireAuth } from "@clerk/express";
+import watchHistoryRoutes from "./routes/WatchHistory";
 dotenv.config();
 
 const app = express();
 
 // Set up middleware FIRST, before creating the server
-app.use(cors({
-  origin: "http://localhost:5173",
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 // Logging middleware
@@ -29,10 +31,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// Set up routes
-app.use("/api/parties", partyRoutes);
-app.use("/api/messages", messageRoutes);
-
 // Test route
 app.get("/api/test", (req, res) => {
   res.json({ message: "API is working" });
@@ -40,7 +38,10 @@ app.get("/api/test", (req, res) => {
 
 // Root route for debugging
 app.get("/", (req, res) => {
-  res.json({ message: "Server is running", routes: ["/api/parties", "/api/messages", "/api/test"] });
+  res.json({
+    message: "Server is running",
+    routes: ["/api/parties", "/api/messages", "/api/test"],
+  });
 });
 
 // NOW create the HTTP server with the configured app
@@ -62,11 +63,14 @@ const startServer = async () => {
     // Set up socket.io
     setupSocket(io);
     console.log("✅ Socket.io configured");
-    
+
     app.use(express.json());
-    app.use("/api/user-profiles",requireAuth(), userProfileRoutes); 
-    app.use("/api/watch-history",requireAuth(),watchHistoryRoutes);        
-    
+    // Set up routes
+    app.use("/api/parties", partyRoutes);
+    app.use("/api/messages", messageRoutes);
+    app.use("/api/user-profiles", requireAuth(), userProfileRoutes);
+    app.use("/api/watch-history", requireAuth(), watchHistoryRoutes);
+
     // Start the server
     server.listen(4000, () => {
       console.log("✅ Server running on http://localhost:4000");
