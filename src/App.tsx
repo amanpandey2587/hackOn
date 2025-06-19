@@ -230,24 +230,21 @@ function ChatPanelImplement() {
     setSelectedParty(null);
   };
   // KEEP YOUR EXISTING handleCreateParty function as is
-  const handleCreateParty = async (data: {
-    title: string;
-    isPrivate: boolean;
-    password?: string;
-  }) => {
-    try {
-      const newParty = await partyService.createParty({
-        ...data,
-        userId: user?.id || "anonymous",
-        username: user?.username || user?.fullName || "Anonymous",
-      });
-      await fetchParties();
-      setSelectedParty(newParty);
-    } catch (error) {
-      console.error("Failed to create party:", error);
-      throw error;
-    }
-  };
+const handleCreateParty = async (data: {
+  title: string;
+  isPrivate: boolean;
+  password?: string;
+}) => {
+  const newParty = await partyService.createParty({
+    ...data,
+    userId: user?.id || "anonymous",
+    username: user?.username || user?.fullName || "Anonymous",
+  });
+  await fetchParties();
+  return newParty;
+};
+
+
   const renderCurrentApp = () => {
     switch (currentApp) {
       case "netflix":
@@ -279,21 +276,23 @@ function ChatPanelImplement() {
         <ChatPanel
           partyId={selectedParty._id}
           partyName={selectedParty.title}
+          tags={selectedParty.tags} // <-- HERE
           username={user?.username || user?.fullName || user?.id || "anonymous"}
           onLeave={handleLeaveParty}
-          onBack={handleBackToSidebar} // Add this
+          onBack={handleBackToSidebar}
         />
       ) : (
-        <WatchPartySidebar
-          parties={parties}
-          currentUserId={user?.id || "anonymous"} // Add this
-          onJoinParty={handleJoinParty}
-          onLeaveParty={handleLeavePartyFromSidebar} // Add this
-          onEnterParty={handleEnterParty} // Add this
-          onCreateParty={handleCreateParty}
-          loading={loading}
-          error={error}
-        />
+<WatchPartySidebar
+  parties={parties}
+  currentUserId={user?.id || "anonymous"}
+  onJoinParty={handleJoinParty}
+  onLeaveParty={handleLeavePartyFromSidebar}
+  onEnterParty={handleEnterParty}
+  onCreateParty={handleCreateParty}
+  loading={loading}
+  error={error}
+  fetchParties={fetchParties} // <--- ADD THIS!
+/>
       )}
     </div>
   );
