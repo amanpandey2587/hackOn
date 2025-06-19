@@ -6,6 +6,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { MessageBubble } from "./MessageBubble";
 import { connectSocket } from "@/utils/server";
 import { useAuth } from "@clerk/clerk-react";
+import { ArrowLeft } from "lucide-react"; 
 
 type Message = {
   _id?: string;
@@ -19,6 +20,7 @@ type ChatPanelProps = {
   partyName: string;
   username: string;
   onLeave: () => void;
+  onBack: () => void;
 };
 
 export const ChatPanel = ({
@@ -26,6 +28,7 @@ export const ChatPanel = ({
   partyId,
   username,
   onLeave,
+  onBack,
 }: ChatPanelProps) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
@@ -97,8 +100,7 @@ export const ChatPanel = ({
         ]);
       };
 
-
-    socketInstance.on("receiveMessage", receiveHandler);
+      socketInstance.on("receiveMessage", receiveHandler);
       return () => {
         if (socketInstance) {
           socketInstance.off("receiveMessage", receiveHandler);
@@ -137,11 +139,19 @@ export const ChatPanel = ({
   return (
     <Card className="w-96 h-screen border-l shadow-md flex flex-col overflow-hidden">
       <div className="p-3 border-b flex justify-between items-center">
-        <h4 className="font-bold">{partyName}</h4>
+        <div className="flex items-center gap-2">
+          <Button size="sm" variant="ghost" onClick={onBack} className="p-1">
+            <ArrowLeft className="w-4 h-4" />
+          </Button>
+
+          <h4 className="font-bold">{partyName}</h4>
+        </div>
+
         <Button size="sm" variant="ghost" onClick={onLeave}>
           Leave
         </Button>
       </div>
+
       <ScrollArea className="flex-1 p-3 overflow-y-auto">
         {messages.map((msg, index) => (
           <MessageBubble
