@@ -8,7 +8,7 @@ import SearchMovie from "./SearchMovie";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState, useRef, useCallback } from "react";
 import Header from "./Header";
-import MainContainer from "./MainContrainer";
+import MainContainer from "./MainContainer";
 import MovieContainer from "./MovieContainer";
 import { useUser } from "@clerk/clerk-react";
 

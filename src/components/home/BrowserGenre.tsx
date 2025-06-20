@@ -157,7 +157,10 @@ const BrowseGenre: React.FC = () => {
     genre?: string[];
   } | null>(null);
   const [selectedShowData, setSelectedShowData] = useState<Show | null>(null);
-
+  const [isWatchMovieOpen, setIsWatchMovieOpen] = useState(false);
+    const handleCloseWatchMovie = () => {
+    setIsWatchMovieOpen(false);
+  };
   const fetchGenres = async () => {
     try {
       const cachedGenres = cache.getGenres();
@@ -552,6 +555,7 @@ const BrowseGenre: React.FC = () => {
       {selectedMovieData && (
         <WatchMovie
           isOpen={watchMovieOpen}
+          onClose={setWatchMovieOpen}
           movieId={selectedMovieData.movieId}
           posterPath={selectedMovieData.posterPath}
           title={selectedMovieData.title}
