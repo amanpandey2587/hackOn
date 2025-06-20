@@ -12,6 +12,7 @@ import messageRoutes from "./routes/messages";
 import userProfileRoutes from "./routes/UserProfile"; // 👈 renamed for clarity
 import { requireAuth } from "@clerk/express";
 import watchHistoryRoutes from "./routes/WatchHistory";
+import audioRoutes from "./routes/getAudio"
 dotenv.config();
 
 const app = express();
@@ -70,7 +71,7 @@ const startServer = async () => {
     app.use("/api/messages", messageRoutes);
     app.use("/api/user-profiles", requireAuth(), userProfileRoutes);
     app.use("/api/watch-history", requireAuth(), watchHistoryRoutes);
-
+    app.use("/api/get-audio",audioRoutes)
     // Start the server
     server.listen(4000, () => {
       console.log("✅ Server running on http://localhost:4000");
