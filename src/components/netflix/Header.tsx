@@ -4,8 +4,10 @@ import { setToggle } from '../../redux/movieSlice';
 import { SignedOut, SignInButton, useUser } from '@clerk/clerk-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import type { RootState } from "../../redux/store";
-
+import { useChatContext } from "@/utils/ChatContextProvider";
+import { Button } from "../ui/button";
 const Header = () => {
+    const { openChatPanel, closeChatPanel, toggleChatPanel, isChatPanelOpen } = useChatContext();
     const toggle = useSelector((store: RootState) => store.movie.toggle);
     const dispatch = useDispatch();
     const { user } = useUser();
@@ -34,8 +36,8 @@ const Header = () => {
             />
             {user && (
                 <div className='flex items-center'>
-                    <IoIosArrowDropdown size="24px" color='white' />
-                    <h1 className='text-lg font-medium text-white'>{user.fullName}</h1>
+                    {/* <IoIosArrowDropdown size="24px" color='white' /> */}
+                    {/* <h1 className='text-lg font-medium text-white'>{user.fullName}</h1> */}
                     <div className='ml-4 flex space-x-2'>
                         <SignedOut>
                             <SignInButton mode="modal">
@@ -56,7 +58,9 @@ const Header = () => {
                         >
                             Go to Home
                         </button>
-
+                        <Button onClick={openChatPanel} className="text-white hover:bg-blue-950 bg-blue-800">
+                            Open Chat
+                        </Button>
                         {location.pathname !== '/series' && (
                             <button
                                 onClick={goToSeriesHandler}

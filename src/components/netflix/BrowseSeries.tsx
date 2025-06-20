@@ -4,7 +4,9 @@ import { useNetflixTVShows } from '../../hooks/useNetflixTVShows';
 import { selectFilteredNetflixTVShows, selectNetflixTVLoading, selectNetflixTVError } from '../../redux/netflixTVSlice';
 import type { RootState } from '../../redux/index';
 import SeriesList from './SeriesList';
-
+import { useChatContext } from '@/utils/ChatContextProvider';
+import { Button } from '../ui/button';
+import { useNavigate } from 'react-router-dom';
 interface Show {
   id: string;
   title: string;
@@ -31,6 +33,7 @@ interface Show {
 }
 
 const BrowseSeries: React.FC = () => {
+  const { openChatPanel, closeChatPanel, toggleChatPanel, isChatPanelOpen } = useChatContext();
   const dispatch = useDispatch();
   const [selectedGenre, setSelectedGenre] = useState<string>('');
   const [selectedYear, setSelectedYear] = useState<string>('');
@@ -59,7 +62,10 @@ const BrowseSeries: React.FC = () => {
     sortBy,
     forceRefresh: false 
   });
-
+  const navigate=useNavigate();
+  const goHomeHandler=()=>{
+    navigate('/netflix')
+  }
   const availableGenres = React.useMemo(() => {
     const genres = new Set<string>();
     shows.forEach(show => {
@@ -183,6 +189,12 @@ const BrowseSeries: React.FC = () => {
                   {filteredShows.length} Series
                 </span>
               </div>
+              <Button onClick={openChatPanel} className='bg-blue-800 hover:bg-blue-950'>
+                Open Chats
+              </Button>
+              <Button onClick={goHomeHandler} className='bg-red-800 hover:bg-red-950'>
+                Go Back
+              </Button>
               <button
                 onClick={handleRefresh}
                 disabled={loading}

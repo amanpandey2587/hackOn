@@ -19,6 +19,8 @@ import axios from "axios";
 import { partyService } from "./services/PartyService";
 import type { Party } from "./services/PartyService";
 import BrowseSeries from "./components/netflix/BrowseSeries";
+import { ChatProvider } from "./utils/ChatContextProvider";
+import GlobalChatPanel from "./services/ChatPanelGlobal";
 const AppContent = () => {
   const location = useLocation();
 
@@ -32,6 +34,7 @@ const AppContent = () => {
           <Route path="/hulu" element={<Hulu />} />
           <Route path="/netflix/series" element={<BrowseSeries/>} />
         </Routes>
+        <GlobalChatPanel/>
       </div>
     </div>
   );
@@ -111,9 +114,11 @@ function App() {
   }
 
   return (
+    <ChatProvider>
     <Router>
       <AppContent />
     </Router>
+    </ChatProvider>
   );
 }
 
