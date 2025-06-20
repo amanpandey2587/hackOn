@@ -24,7 +24,10 @@ const MovieCard: React.FC<MovieCardProps> = ({
   const dispatch = useDispatch();
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
-  
+  const [isWatchMovieOpen, setIsWatchMovieOpen] = useState(false);
+    const handleCloseWatchMovie = () => {
+    setIsWatchMovieOpen(false);
+  };
   // Fix: Use the correct property names from your Redux state
   const { open, id } = useSelector((state: any) => state.movie);
   
@@ -155,6 +158,7 @@ const MovieCard: React.FC<MovieCardProps> = ({
       {open && id === movieId && (
         <WatchMovies
           isOpen={open}
+          onClose={handleCloseWatchMovie}
           movieId={movieId}
           posterPath={posterPath}
           title={title}

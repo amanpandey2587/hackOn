@@ -57,7 +57,10 @@ const Stream: React.FC<StreamProps> = ({
     clearContentError,
     clearContentCache
   } = useMainContent();
-
+  const [isWatchMovieOpen, setIsWatchMovieOpen] = useState(false);
+    const handleCloseWatchMovie = () => {
+    setIsWatchMovieOpen(false);
+  };
   const [enhancedContent, setEnhancedContent] = useState<EnhancedContentItem[]>([]);
   const [tvMazeLoading, setTvMazeLoading] = useState(false);
   const [watchMovie, setWatchMovie] = useState<WatchMovieState>({
@@ -373,6 +376,7 @@ const Stream: React.FC<StreamProps> = ({
       {watchMovie.isOpen && watchMovie.movieData && (
         <WatchMovie
           isOpen={watchMovie.isOpen}
+          onClose={handleCloseWatch}
           movieId={watchMovie.movieData.movieId}
           posterPath={watchMovie.movieData.posterPath}
           title={watchMovie.movieData.title}
