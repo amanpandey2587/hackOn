@@ -8,18 +8,19 @@ import AudioRecorder from '@/components/Search/AudioStreamer'
 import SearchBar from '@/components/Search/SearchBar'
 import MusicSeparator from '@/components/Search/MusicSeparator'
 import RecommendationBar from '@/components/home/RecommendationBar' // Add this import
-
+import KaraokeApp from '../components/Karaoke_Mode'
 const Home = () => {
   return (
     <div className=''>
-      <Stream/>
+      {/* <Stream/> */}
       <div className=''>
         <Navbar/>
       </div>
       {/* Add the recommendation bar here */}
-      <BrowseGenre/>
+      {/* <BrowseGenre/>
       <RecommendationBar />
-      <MusicSeparator/>
+      <MusicSeparator/> */}
+      {/* <KaraokeApp/> */}
     </div>
   )
 }

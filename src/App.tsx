@@ -12,6 +12,7 @@ import { useAuth, useUser } from "@clerk/clerk-react";
 import Netflix from "./components/Netflix";
 import Prime from "./components/Prime";
 import Hulu from "./components/Hulu";
+import KaraokeApp from "./components/Karaoke_Mode";
 import AuthScreen from "./components/AuthScreen";
 import Home from "./pages/Home";
 import { useEffect, useState } from "react";
@@ -32,6 +33,7 @@ const AppContent = () => {
           <Route path="/netflix" element={<Netflix />} />
           <Route path="/prime" element={<Prime />} />
           <Route path="/hulu" element={<Hulu />} />
+          <Route path="/karoke" element={<KaraokeApp/>}/>
           <Route path="/netflix/series" element={<BrowseSeries/>} />
         </Routes>
         <GlobalChatPanel/>

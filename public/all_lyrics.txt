@@ -1,0 +1,143 @@
+Tum Hi Ho Song Instrumental ｜ Aashiqui 2
+const LYRICS = [
+  { time: 5, text: "Hum tere bin ab reh nahi sakte" },
+  { time: 12, text: "Tere bina kya wajood mera" },
+  { time: 19, text: "Tujhse juda gar ho jaayenge" },
+  { time: 26, text: "Toh khud se hi ho jaayenge judaa" },
+  { time: 33, text: "Kyunki tum hi ho" },
+  { time: 40, text: "Ab tum hi ho" },
+  { time: 47, text: "Zindagi ab tum hi ho" },
+  { time: 54, text: "Chain bhi, mera dard bhi" },
+  { time: 61, text: "Meri aashiqui ab tum hi ho" },
+  { time: 68, text: "Tera mera rishta hai kaisa" },
+  { time: 75, text: "Ik pal door gawara nahi" },
+  { time: 82, text: "Tere liye har roz hai jeete" },
+  { time: 89, text: "Tujh ko diya mera waqt sabhi" },
+  { time: 96, text: "Koi lamha mera na ho tere bina" },
+  { time: 103, text: "Har saans pe naam tera" },
+  { time: 110, text: "Kyunki tum hi ho" },
+  { time: 117, text: "Ab tum hi ho" },
+  { time: 124, text: "Zindagi ab tum hi ho" },
+  { time: 131, text: "Chain bhi, mera dard bhi" },
+  { time: 138, text: "Meri aashiqui ab tum hi ho" }
+];
+
+// Shayad - Love Aaj Kal 2 
+const LYRICS = [
+  { time: 14,  text: "Shayad kabhi na keh sakun main tumko" },
+  { time: 21,  text: "Kahe bina samajh lo tum shayad" },
+  { time: 28,  text: "Shayad mere khayal mein tum ik din" },
+  { time: 35,  text: "Milo mujhe kahin pe gum shayad" },
+  { time: 42,  text: "Jo tum na ho, rahenge hum nahi" },
+  { time: 49,  text: "Na chahiye kuch tumse zyada, tumse kam nahi" },
+  { time: 56,  text: "Jo tum na ho, toh hum bhi hum nahi" },
+  { time: 63,  text: "Na chahiye kuch tumse zyada, tumse kam nahi" },
+  { time: 70,  text: "Aankhon ko khwaab dena, khud hi sawaal karke" },
+  { time: 77,  text: "Khud hi jawaab dena teri taraf se" },
+  { time: 84,  text: "Bin kaam kaam karna, jaana kahin ho chahe" },
+  { time: 91,  text: "Har baar hi guzarna teri taraf se" },
+  { time: 98,  text: "Yeh koshishein toh hongi kam nahi" },
+  { time: 105, text: "Na chahiye kuch tumse zyada, tumse kam nahi" },
+  { time: 112, text: "Jo tum na ho... rahenge hum nahi" },
+  { time: 119, text: "Jo tum na ho... toh hum bhi hum nahi" },
+  { time: 126, text: "Na chahiye kuch tumse zyada, tumse kam nahi" },
+];
+
+// Pehli nazar mein-Atif Aslam | Race 
+const LYRICS = [
+  { time: 15,  text: "Pehli nazar mein kaise jaadu kar diya" },
+  { time: 22,  text: "Tera ban baita hai mera jiya" },
+  { time: 29,  text: "Jaane kya hoga, kya pata" },
+  { time: 36,  text: "Is pal ko milke aa jee le zara" },
+  { time: 43,  text: "Main hoon yahan, tu hai yahan" },
+  { time: 50,  text: "Meri baahon mein aa, aa bhi ja" },
+  { time: 57,  text: "O jaan‑e‑jaan, dono jahan" },
+  { time: 64,  text: "Meri baahon mein aa, bhool ja aa" },
+  { time: 71,  text: "Baby I love you, baby I love you so" },
+  { time: 78,  text: "Oh I love you, I love you so" },
+  { time: 85,  text: "Har dua mein shamil tera pyaar hai" },
+  { time: 92,  text: "Bin tere lamha bhi dushwaar hai" },
+  { time: 99,  text: "Dhadkanon ko tujhe se hi darkaar hai" },
+  { time: 106, text: "Tujhse hai rahatein, tujhse hai chahatein" },
+  { time: 113, text: "Tu jo mili ek din mujhe, main ho gaya lapata" },
+  { time: 120, text: "Kar diya deewana dard‑e‑khaas ne" },
+  { time: 127, text: "Chain cheena ishq ke ehsaas ne" },
+  { time: 134, text: "Bekhayali di hai teri pyaas ne" },
+  { time: 141, text: "Chaya suroor hai, kuch toh zaroor hai" },
+  { time: 148, text: "Yeh dooriyan jeene na de, haal mera tujhe na pata" },
+  { time: 155, text: "O jaan‑e‑jaan, dono jahan" },
+  { time: 162, text: "Meri baahon mein aa, bhool ja aa" },
+  { time: 169, text: "Baby I love you, baby I love you so" },
+];
+
+// Tujh Mein Rab Dikhta Hai 
+const LYRICS = [
+  { time: 15,  text: "Tu hi toh jannat meri, tu hi mera junoon" },
+  { time: 22,  text: "Tu hi toh mannat meri, tu hi rooh ka sukoon" },
+  { time: 29,  text: "Tu hi ankhiyon ki thandak, tu hi dil ki hai dastak" },
+  { time: 36,  text: "Aur kuch na jaanu main, bas itna hi jaanu" },
+  { time: 43,  text: "Tujh mein rab dikhta hai, yaara main kya karun" },
+  { time: 50,  text: "Tujh mein rab dikhta hai, yaara main kya karun" },
+  { time: 57,  text: "Sajde sar jhukta hai, yaara main kya karun" },
+  { time: 64,  text: "Tujh mein rab dikhta hai, yaara main kya karun" },
+
+  { time: 71,  text: "Kaisi hai ye doori, kaisi majboori" },
+  { time: 78,  text: "Maine nazaron se tujhe chhu liya" },
+  { time: 85,  text: "Kabhi teri khushboo, kabhi teri baatein" },
+  { time: 92,  text: "Bin maange ye jahaan paa liya" },
+  { time: 99,  text: "Tu hi dil ki raunak, tu hi janmon ki daulat" },
+  { time: 106, text: "Aur kuch na jaanu, bas itna hi jaanu" },
+  { time: 113, text: "Tujh mein rab dikhta hai, yaara main kya karun" },
+  { time: 120, text: "Sajde sar jhukta hai, yaara main kya karun" },
+
+  { time: 127, text: "Vaasdi vaasdi vaasdi, dil di dil vich vaasdi" },
+  { time: 134, text: "Naasdi naasdi naasdi, dil ro ve te naasdi" },
+  { time: 141, text: "Rab ne bana di jodi" },
+
+  { time: 148, text: "Cham cham aaye, mujhe tarsaye" },
+  { time: 155, text: "Tera saaya chhed ke chhoomta" },
+  { time: 162, text: "Tu jo muskaaye, tu jo sharmaye" },
+  { time: 169, text: "Jaise mera hai khuda jhoomta" },
+  { time: 176, text: "Tu hi meri barkat, tu hi meri ibaadat" },
+  { time: 183, text: "Aur kuch na jaanu, bas itna hi jaanu" },
+  { time: 190, text: "Tujh mein rab dikhta hai, yaara main kya karun" },
+  { time: 197, text: "Sajde sar jhukta hai, yaara main kya karun" },
+];
+
+// Tujhe Dekha To Ye Jaana Sanam
+const LYRICS = [
+  { time: 0,   text: "Tujhe dekha toh yeh jaana sanam" },
+  { time: 7,   text: "Pyaar hota hai deewana sanam" },
+  { time: 14,  text: "Ab yahan se kahan jaayein hum" },
+  { time: 21,  text: "Teri baahon mein mar jaayein hum" },
+
+  { time: 28,  text: "Tujhe dekha toh yeh jaana sanam" },
+  { time: 35,  text: "Pyaar hota hai deewana sanam" },
+
+  { time: 42,  text: "Pal pal dil ke paas" },
+  { time: 48,  text: "Tum rehti ho" },
+  { time: 52,  text: "Jeevan meethi pyaas" },
+  { time: 56,  text: "Yeh kehti ho" },
+  { time: 60,  text: "Pal pal dil ke paas" },
+  { time: 65,  text: "Tum rehti ho" },
+
+  { time: 70,  text: "Har shaam aankhon par" },
+  { time: 75,  text: "Tera aanchal lehraye" },
+  { time: 80,  text: "Har raat yaadon ki" },
+  { time: 85,  text: "Baarat le aaye" },
+
+  { time: 90,  text: "Main saans leta hoon" },
+  { time: 95,  text: "Teri khushboo aati hai" },
+  { time: 100, text: "Ek mehka mehka sa" },
+  { time: 105, text: "Paighaam laati hai" },
+
+  { time: 110, text: "Meri tanhaiyon ko" },
+  { time: 115, text: "Tera ehsaas hai" },
+  { time: 120, text: "Main jo bhi hoon" },
+  { time: 124, text: "Bas tera pyaar hai" },
+
+  { time: 130, text: "Tujhe dekha toh yeh jaana sanam" },
+  { time: 137, text: "Pyaar hota hai deewana sanam" },
+  { time: 144, text: "Ab yahan se kahan jaayein hum" },
+  { time: 151, text: "Teri baahon mein mar jaayein hum" },
+];
