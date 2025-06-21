@@ -391,7 +391,7 @@ const handleClose = useCallback(async () => {
         const newTime = player.getCurrentTime();
         setCurrentPlayTime(newTime);
         try {
-          await axios.patch(`/api/watch-history/${watchHistoryId}`, {
+          await axios.patch(`http://localhost:4000/api/watch-history/getWatchHistory/${watchHistoryId}`, {
             watchDuration: newTime,
           });
         } catch (error) {

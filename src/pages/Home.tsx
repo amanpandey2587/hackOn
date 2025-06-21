@@ -7,14 +7,16 @@ import Karaoke_Mode from '../components/Karaoke_Mode'
 import BrowseGenre from '@/components/home/BrowserGenre'
 import AudioRecorder from '@/components/Search/AudioStreamer'
 import SearchBar from '@/components/Search/SearchBar'
+import MusicSeparator from '@/components/Search/MusicSeparator'
 const Home = () => {
   return (
     <div className=''>
-      <Stream/>
+      {/* <Stream/> */}
       <div className=''>
       <Navbar/>
       </div>
-      <BrowseGenre/>
+      {/* <BrowseGenre/> */}
+      <MusicSeparator/>
       {/* <AudioRecorder/> */}
       {/* <SearchBar/> */}
     </div>
