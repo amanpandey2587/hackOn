@@ -9,8 +9,8 @@ interface MovieCardProps {
   title?: string;
   rating?: number;
   releaseDate?: string;
-  genre:string[] | undefined;
-  totalDuration?:number;
+  genre: string[] | undefined;
+  totalDuration?: number;
 }
 
 const MovieCard: React.FC<MovieCardProps> = ({
@@ -19,19 +19,25 @@ const MovieCard: React.FC<MovieCardProps> = ({
   title,
   rating,
   releaseDate,
-  genre,totalDuration,
+  genre,
+  totalDuration,
 }) => {
   const dispatch = useDispatch();
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
-  const [isWatchMovieOpen, setIsWatchMovieOpen] = useState(false);
-    const handleCloseWatchMovie = () => {
-    setIsWatchMovieOpen(false);
-  };
-  // Fix: Use the correct property names from your Redux state
-  const { open, id } = useSelector((state: any) => state.movie);
   
-  // console.log("Data is ", posterPath, movieId, title, rating, releaseDate);
+  // Remove unused local state
+  // const [isWatchMovieOpen, setIsWatchMovieOpen] = useState(false);
+  
+  // Fix: Create proper close handler that updates Redux state
+  const handleCloseWatchMovie = () => {
+    console.log("🔴 Closing movie modal via Redux");
+    dispatch(setOpen(false)); // This will close the modal
+    // Optionally clear the movie ID as well
+    // dispatch(getId(null));
+  };
+
+  const { open, id } = useSelector((state: any) => state.movie);
   
   const handleOpen = () => {
     console.log("Movie clicked");
@@ -65,12 +71,13 @@ const MovieCard: React.FC<MovieCardProps> = ({
         onClick={handleOpen}
         className="group cursor-pointer min-w-[180px] md:min-w-[200px] transform transition-all duration-300 hover:scale-110 hover:z-10 relative"
       >
+        {/* ... rest of your JSX remains the same ... */}
         <div className="relative overflow-hidden rounded-lg shadow-lg">
           {posterPath && !imageLoaded && !imageError && (
             <div className="w-full h-[270px] md:h-[300px] bg-gray-800 animate-pulse rounded-lg flex items-center justify-center">
               <div className="text-gray-600">
                 <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
+                  <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
                 </svg>
               </div>
             </div>
@@ -79,7 +86,7 @@ const MovieCard: React.FC<MovieCardProps> = ({
           {(!posterPath || imageError) && (
             <div className="w-full h-[270px] md:h-[300px] bg-gradient-to-br from-gray-800 to-gray-900 rounded-lg flex flex-col items-center justify-center text-gray-400 border border-gray-700">
               <svg className="w-16 h-16 mb-3 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
+                <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
               </svg>
               <div className="text-center px-4">
                 <p className="text-sm font-medium text-white mb-1">
@@ -154,11 +161,11 @@ const MovieCard: React.FC<MovieCardProps> = ({
         <div className="absolute -bottom-2 left-2 right-2 h-4 bg-black opacity-0 group-hover:opacity-30 blur-md transition-all duration-300 rounded-lg"></div>
       </div>
 
-      {/* WatchMovie Modal - Fix: Use correct property names */}
+      {/* WatchMovie Modal - Fixed: Now uses proper Redux close handler */}
       {open && id === movieId && (
         <WatchMovies
           isOpen={open}
-          onClose={handleCloseWatchMovie}
+          onClose={handleCloseWatchMovie} // ✅ Now properly closes via Redux
           movieId={movieId}
           posterPath={posterPath}
           title={title}

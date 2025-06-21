@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import WatchMovie from "../WatchMovies"; // Adjust the import path as needed
 
 interface Movie {
@@ -199,8 +199,20 @@ const MainContainer = ({
   };
 
   const handleCloseWatchMovie = () => {
+    alert("handleCloseWatchMovie was called!"); // This should show an alert
     setIsWatchMovieOpen(false);
   };
+
+  // Add this useEffect to track state changes
+  useEffect(() => {
+    console.log("🟢 STATE CHANGE: isWatchMovieOpen is now:", isWatchMovieOpen);
+  }, [isWatchMovieOpen]);
+
+  // Also add this in your return statement, right before the WatchMovie component
+  console.log(
+    "🟡 RENDER: About to render WatchMovie with isOpen:",
+    isWatchMovieOpen
+  );
 
   if (!movies || movies.length === 0) {
     console.log("No movies provided as props");

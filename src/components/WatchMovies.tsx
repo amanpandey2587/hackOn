@@ -61,7 +61,7 @@ const WatchMovie: React.FC<WatchMovieProps> = (props) => {
   const [trailerData, setTrailerData] = useState<{
     [key: string]: TrailerData;
   }>({});
-  
+
   const [isPlaying, setIsPlaying] = useState(false);
   const [showControls, setShowControls] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
@@ -317,16 +317,114 @@ const WatchMovie: React.FC<WatchMovieProps> = (props) => {
     console.log("typeof props.onClose:", typeof props.onClose);
 
     // Update watch history if all conditions are met
-    if (player && isPlayerReady && watchHistoryId) {
+    if (player && isPlayerReady && movieId) {
+      // Use movieId from props
       const finalTime = player.getCurrentTime();
+
+      console.log("🏁 [FINAL_UPDATE] Sending final watch update:", {
+        movieId: movieId,
+        finalTime: finalTime,
+        totalDuration: totalDuration,
+        finalPercentage: Math.round((finalTime / totalDuration) * 100),
+      });
+
       try {
-        await axios.patch(`/api/watch-history/${watchHistoryId}`, {
+        // Send complete data to create/update endpoint using props data
+        const finalUpdateData = {
+          contentId: movieId,
+          contentType: "movie",
+          title: title,
           watchDuration: finalTime,
-        });
+          totalDuration: totalDuration,
+          genre: genre || [],
+          rating: rating,
+          releaseYear: new Date(releaseDate).getFullYear(),
+          streamingPlatform: "Netflix", // or whatever platform you're using
+        };
+
+        console.log(
+          "📤 [FINAL_UPDATE] Sending final update data:",
+          finalUpdateData
+        );
+
+        const response = await axios.post(
+          "/api/watch-history",
+          finalUpdateData
+        );
+
+        console.log(
+          "✅ [FINAL_UPDATE] Final watch history updated successfully:",
+          response.data
+        );
       } catch (error) {
-        console.error("Error updating watch history:", error);
+        console.error("❌ [FINAL_UPDATE] Error updating watch history:", error);
+        if (error.response) {
+          console.error(
+            "❌ [FINAL_UPDATE] Error response:",
+            error.response.data
+          );
+          console.error(
+            "❌ [FINAL_UPDATE] Error status:",
+            error.response.status
+          );
+        }
       }
     }
+
+    // BONUS: Initial watch history creation (add this when the movie starts playing)
+    // Add this inside your onStateChange event when state === window.YT.PlayerState.PLAYING
+    const createInitialWatchHistory = async () => {
+      if (!watchHistoryId && movieId) {
+        // Only create if we don't have a watchHistoryId yet
+        console.log("🆕 [INITIAL_WATCH] Creating initial watch history entry");
+
+        try {
+          const initialData = {
+            contentId: movieId,
+            contentType: "movie",
+            title: title,
+            watchDuration: 0, // Starting at 0
+            totalDuration: totalDuration,
+            genre: genre || [],
+            rating: rating,
+            releaseYear: new Date(releaseDate).getFullYear(),
+            streamingPlatform: "Netflix", // or whatever platform you're using
+          };
+
+          console.log("📤 [INITIAL_WATCH] Sending initial data:", initialData);
+
+          const response = await axios.post(
+            "http://localhost:4000/api/watch-history",
+            initialData
+          );
+
+          console.log(
+            "✅ [INITIAL_WATCH] Initial watch history created:",
+            response.data
+          );
+
+          // Set the watchHistoryId for future updates
+          if (response.data.data._id) {
+            setWatchHistoryId(response.data.data._id);
+          }
+        } catch (error) {
+          console.error(
+            "❌ [INITIAL_WATCH] Error creating initial watch history:",
+            error
+          );
+          if (error.response) {
+            console.error(
+              "❌ [INITIAL_WATCH] Error response:",
+              error.response.data
+            );
+            console.error(
+              "❌ [INITIAL_WATCH] Error status:",
+              error.response.status
+            );
+          }
+        }
+      }
+    };
 
     // Fix: Use props.onClose instead of just onClose
     if (props.onClose && typeof props.onClose === "function") {
@@ -389,16 +487,59 @@ const WatchMovie: React.FC<WatchMovieProps> = (props) => {
   ]);
   useEffect(() => {
     let interval: number | null = null;
-    if (isPlaying && player && isPlayerReady && watchHistoryId) {
+    if (isPlaying && player && isPlayerReady && movieId) {
+      // Use movieId from props
       interval = window.setInterval(async () => {
         const newTime = player.getCurrentTime();
         setCurrentPlayTime(newTime);
+
+        console.log("📊 [WATCH_UPDATE] Updating watch progress:", {
+          movieId: movieId,
+          currentTime: newTime,
+          totalDuration: totalDuration,
+          percentage: Math.round((newTime / totalDuration) * 100),
+        });
+
         try {
-          await axios.patch(`http://localhost:4000/api/watch-history/getWatchHistory/${watchHistoryId}`, {
+          // Send complete data to create/update endpoint using props data
+          const updateData = {
+            contentId: movieId,
+            contentType: "movie",
+            title: title,
             watchDuration: newTime,
-          });
+            totalDuration: totalDuration,
+            genre: genre || [],
+            rating: rating,
+            releaseYear: new Date(releaseDate).getFullYear(),
+            streamingPlatform: "Netflix", // or whatever platform you're using
+          };
+
+          console.log("📤 [WATCH_UPDATE] Sending update data:", updateData);
+
+          const response = await axios.post(
+            "http://localhost:4000/api/watch-history",
+            updateData
+          );
+
+          console.log(
+            "✅ [WATCH_UPDATE] Watch history updated successfully:",
+            response.data
+          );
         } catch (error) {
-          console.error("Error updating watch history:", error);
+          console.error(
+            "❌ [WATCH_UPDATE] Error updating watch history:",
+            error
+          );
+          if (error.response) {
+            console.error(
+              "❌ [WATCH_UPDATE] Error response:",
+              error.response.data
+            );
+            console.error(
+              "❌ [WATCH_UPDATE] Error status:",
+              error.response.status
+            );
+          }
         }
       }, WATCH_UPDATE_INTERVAL * 1000);
     }
@@ -407,7 +548,17 @@ const WatchMovie: React.FC<WatchMovieProps> = (props) => {
         clearInterval(interval);
       }
     };
-  }, [isPlaying, player, isPlayerReady, watchHistoryId]);
+  }, [
+    isPlaying,
+    player,
+    isPlayerReady,
+    movieId,
+    totalDuration,
+    title,
+    rating,
+    releaseDate,
+    genre,
+  ]);
   const handlePause = useCallback(() => {
     if (player && isPlayerReady) {
       player.pauseVideo();

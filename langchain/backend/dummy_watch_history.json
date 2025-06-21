@@ -1,0 +1,20 @@
+[
+  {
+    "userId": "user_2yh036LYXpjTfvFhJ2zLjWmmgXn",
+    "title": "Interstellar",
+    "genre": ["Sci-Fi", "Adventure"],
+    "watchPercentage": 100,
+    "completed": true,
+    "streamingService": "Amazon Prime",
+    "releaseYear": 2014
+  },
+  {
+    "userId": "user_2yh036LYXpjTfvFhJ2zLjWmmgXn",
+    "title": "Parasite",
+    "genre": ["Thriller", "Drama"],
+    "watchPercentage": 90,
+    "completed": true,
+    "streamingService": "Hulu",
+    "releaseYear": 2019
+  }
+]

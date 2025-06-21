@@ -57,10 +57,10 @@ const Stream: React.FC<StreamProps> = ({
     clearContentError,
     clearContentCache
   } = useMainContent();
-  const [isWatchMovieOpen, setIsWatchMovieOpen] = useState(false);
-    const handleCloseWatchMovie = () => {
-    setIsWatchMovieOpen(false);
-  };
+  // const [isWatchMovieOpen, setIsWatchMovieOpen] = useState(false);
+  //   const handleCloseWatchMovie = () => {
+  //   setIsWatchMovieOpen(false);
+  // };
   const [enhancedContent, setEnhancedContent] = useState<EnhancedContentItem[]>([]);
   const [tvMazeLoading, setTvMazeLoading] = useState(false);
   const [watchMovie, setWatchMovie] = useState<WatchMovieState>({
