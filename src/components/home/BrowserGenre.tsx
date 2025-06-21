@@ -555,7 +555,7 @@ const BrowseGenre: React.FC = () => {
       {selectedMovieData && (
         <WatchMovie
           isOpen={watchMovieOpen}
-          onClose={setWatchMovieOpen}
+          onClose={handleCloseMovie}
           movieId={selectedMovieData.movieId}
           posterPath={selectedMovieData.posterPath}
           title={selectedMovieData.title}
