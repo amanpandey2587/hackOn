@@ -6,15 +6,17 @@ import StreamingPlatform from '../components/StreamingPlatform'
 import Karaoke_Mode from '../components/Karaoke_Mode'
 import BrowseGenre from '@/components/home/BrowserGenre'
 import AudioRecorder from '@/components/Search/AudioStreamer'
+import SearchBar from '@/components/Search/SearchBar'
 const Home = () => {
   return (
     <div className=''>
-      {/* <Stream/>
+      <Stream/>
       <div className=''>
       <Navbar/>
       </div>
-      <BrowseGenre/> */}
-      <AudioRecorder/>
+      <BrowseGenre/>
+      {/* <AudioRecorder/> */}
+      {/* <SearchBar/> */}
     </div>
   )
 }
