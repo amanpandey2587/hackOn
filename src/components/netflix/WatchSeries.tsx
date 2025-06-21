@@ -39,6 +39,7 @@ interface WatchSeriesProps {
   isOpen: boolean;
   onClose: () => void;
   show: Show;
+  initialViewMode?: 'overview' | 'details' | 'watch';
 }
 
 interface TrailerData {
@@ -56,8 +57,8 @@ const trailerCache = new Map<string, CachedTrailerData>();
 const CACHE_DURATION = 24 * 60 * 60 * 1000;
 const MAX_CACHE_SIZE = 100;
 
-const WatchSeries: React.FC<WatchSeriesProps> = ({ isOpen, onClose, show }) => {
-  const [viewMode, setViewMode] = useState<'overview' | 'details' | 'watch'>('overview');
+const WatchSeries: React.FC<WatchSeriesProps> = ({ isOpen, onClose, show, initialViewMode='overview' }) => {
+  console.log("Show in the frontend is",show)
   const [trailerData, setTrailerData] = useState<TrailerData | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [showControls, setShowControls] = useState(true);
@@ -70,7 +71,7 @@ const WatchSeries: React.FC<WatchSeriesProps> = ({ isOpen, onClose, show }) => {
   const [currentPlayTime, setCurrentPlayTime] = useState<number>(0);
   const [selectedSeason, setSelectedSeason] = useState(1);
   const [selectedEpisode, setSelectedEpisode] = useState(1);
-  
+  const [viewMode, setViewMode] = useState<'overview' | 'details' | 'watch'>(initialViewMode);
   const { getToken } = useAuth();
   const playerRef = useRef<HTMLDivElement>(null);
   const controlsTimeoutRef = useRef<number | null>(null);
@@ -83,7 +84,11 @@ const WatchSeries: React.FC<WatchSeriesProps> = ({ isOpen, onClose, show }) => {
       const firstKey = trailerCache.keys().next().value || "string";
       trailerCache.delete(firstKey);
     }
-
+    useEffect(() => {
+      if (isOpen) {
+        setViewMode(initialViewMode);
+      }
+    }, [isOpen, initialViewMode]);
     const now = Date.now();
     const cachedData: CachedTrailerData = {
       ...data,

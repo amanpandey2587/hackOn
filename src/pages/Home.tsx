@@ -11,12 +11,12 @@ import MusicSeparator from '@/components/Search/MusicSeparator'
 const Home = () => {
   return (
     <div className=''>
-      {/* <Stream/> */}
+      <Stream/>
       <div className=''>
       <Navbar/>
       </div>
-      {/* <BrowseGenre/> */}
-      <MusicSeparator/>
+      <BrowseGenre/>
+      {/* <MusicSeparator/> */}
       {/* <AudioRecorder/> */}
       {/* <SearchBar/> */}
     </div>

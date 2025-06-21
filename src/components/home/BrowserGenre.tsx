@@ -16,8 +16,8 @@ import {
 } from 'lucide-react';
 
 // Import the streaming components
-import WatchMovie from '../../components/WatchMovies'; // Adjust path as needed
-import WatchSeries from '../../components/netflix/WatchSeries'; // Adjust path as needed
+import WatchMovie from '../../components/WatchMovies'; 
+import WatchSeries from '../../components/netflix/WatchSeries'; 
 
 // Interfaces
 interface Genre {

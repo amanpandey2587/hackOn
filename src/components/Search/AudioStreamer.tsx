@@ -158,7 +158,7 @@ const AudioRecorder: React.FC = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex items-center justify-center bg-transparent-100">
       <button
         onClick={handleMicClick}
         disabled={isUploading}
@@ -181,7 +181,7 @@ const AudioRecorder: React.FC = () => {
       
       {isUploading && (
         <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2">
-          <div className="bg-white px-4 py-2 rounded-lg shadow-lg">
+          <div className="bg-white px-1 py-1 rounded-lg shadow-lg">
             <span className="text-gray-700">Uploading...</span>
           </div>
         </div>
