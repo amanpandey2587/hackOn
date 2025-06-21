@@ -1,7 +1,10 @@
-const express = require('express');
-const multer = require('multer');
-const fs = require('fs');
-const path = require('path');
+import express from 'express';
+import multer from 'multer';
+import fs from 'fs';
+import path from 'path';
+import { requireAuth } from '@clerk/express';
+import { MoodService } from '../services/moodService';
+
 const router = express.Router();
 
 const uploadsDir = path.join(__dirname, 'uploads');
@@ -9,11 +12,11 @@ if (!fs.existsSync(uploadsDir)) {
     fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
-const storage = multer.memoryStorage(); 
+const storage = multer.memoryStorage();
 const upload = multer({
     storage: storage,
     limits: {
-        fileSize: 10 * 1024 * 1024, 
+        fileSize: 10 * 1024 * 1024,
     },
     fileFilter: (req: any, file: any, cb: any) => {
         if (file.mimetype.startsWith('audio/')) {
@@ -24,48 +27,80 @@ const upload = multer({
     }
 });
 
-router.post('/getAudio', upload.single('audio'), async (req: any, res: any) => {
+// Main endpoint for audio analysis and mood detection
+// Temporarily change this line:
+// router.post('/getAudio', requireAuth(), upload.single('audio'), async (req: any, res: any) => {
+// to this
+router.post('/getAudio', upload.single('audio'), async (req: any, res: any) => {   
+    if (!req.auth) {
+        req.auth = { userId: 'test-user-123' };
+    }
+    // ... rest of your code
     try {
         const audioFile = req.file;
+        const userId = req.auth.userId; // From Clerk authentication
         
         if (!audioFile) {
-            return res.json({
+            return res.status(400).json({
                 success: false,
                 message: "No audio file found"
             });
         }
 
+        // Save the file temporarily
         const timestamp = Date.now();
-        const fileExtension = path.extname(audioFile.originalname) || '.audio';
-        const fileName = `audio_${timestamp}_${audioFile.originalname.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+        const fileExtension = '.wav'; // Ensure it's WAV for the model
+        const fileName = `audio_${timestamp}_${userId}.wav`;
         const filePath = path.join(uploadsDir, fileName);
 
         fs.writeFileSync(filePath, audioFile.buffer);
 
-        console.log('Audio file received and saved:', {
-            originalName: audioFile.originalname,
+        console.log('Audio file received:', {
+            userId,
             savedAs: fileName,
-            savedPath: filePath,
-            mimeType: audioFile.mimetype,
             size: audioFile.size,
-            bufferLength: audioFile.buffer.length
         });
 
-        return res.json({
-            success: true,
-            message: "Audio file received and saved successfully",
-            fileInfo: {
-                originalName: audioFile.originalname,
-                savedFileName: fileName,
-                savedPath: filePath,
-                mimeType: audioFile.mimetype,
-                size: audioFile.size,
-                sizeInKB: Math.round(audioFile.size / 1024)
-            },
-        });
+        try {
+            // Analyze mood using Python API
+            const moodAnalysis = await MoodService.analyzeAudioMood(filePath);
+            
+            // Save mood to database
+            const moodHistory = await MoodService.saveMoodForUser(userId, moodAnalysis);
+            
+            // Clean up the temporary file
+            fs.unlinkSync(filePath);
+
+            return res.json({
+                success: true,
+                message: "Audio analyzed and mood detected successfully",
+                mood: {
+                    current: moodAnalysis,
+                    history: moodHistory.aggregatedMoodData,
+                },
+                fileInfo: {
+                    originalName: audioFile.originalname,
+                    mimeType: audioFile.mimetype,
+                    size: audioFile.size,
+                }
+            });
+
+        } catch (analysisError) {
+            // Clean up file on error
+            if (fs.existsSync(filePath)) {
+                fs.unlinkSync(filePath);
+            }
+            
+            console.error("Error analyzing mood:", analysisError);
+            return res.status(500).json({
+                success: false,
+                message: "Error analyzing mood from audio",
+                error: analysisError instanceof Error ? analysisError.message : 'Unknown error'
+            });
+        }
 
     } catch (error) {
-        console.error("Error received while getting the audio", error);
+        console.error("Error processing audio:", error);
         return res.status(500).json({
             success: false,
             message: "Error occurred while processing the audio file",
@@ -74,28 +109,59 @@ router.post('/getAudio', upload.single('audio'), async (req: any, res: any) => {
     }
 });
 
-router.get('/download/:filename', (req: any, res: any) => {
+// Get mood history for a user
+router.get('/mood-history', requireAuth(), async (req: any, res: any) => {
     try {
-        const filename = req.params.filename;
-        const filePath = path.join(uploadsDir, filename);
+        const userId = req.auth.userId;
+        const limit = parseInt(req.query.limit) || 50;
         
-        if (!fs.existsSync(filePath)) {
-            return res.status(404).json({
-                success: false,
-                message: "File not found"
+        const moodHistory = await MoodService.getUserMoodHistory(userId, limit);
+        
+        return res.json({
+            success: true,
+            data: moodHistory,
+        });
+        
+    } catch (error) {
+        console.error("Error fetching mood history:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Error fetching mood history",
+            error: error instanceof Error ? error.message : 'Unknown error'
+        });
+    }
+});
+
+// Get mood statistics for a user
+router.get('/mood-stats', requireAuth(), async (req: any, res: any) => {
+    try {
+        const userId = req.auth.userId;
+        const moodHistory = await MoodService.getUserMoodHistory(userId);
+        
+        if (!moodHistory.aggregatedData) {
+            return res.json({
+                success: true,
+                data: {
+                    hasData: false,
+                    message: "No mood data available yet"
+                }
             });
         }
         
-        res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-        res.setHeader('Content-Type', 'application/octet-stream');
-        
-        res.sendFile(filePath);
+        return res.json({
+            success: true,
+            data: {
+                hasData: true,
+                stats: moodHistory.aggregatedData,
+                totalMoods: moodHistory.moods.length,
+            }
+        });
         
     } catch (error) {
-        console.error("Error downloading file:", error);
+        console.error("Error fetching mood stats:", error);
         return res.status(500).json({
             success: false,
-            message: "Error occurred while downloading the file",
+            message: "Error fetching mood statistics",
             error: error instanceof Error ? error.message : 'Unknown error'
         });
     }
