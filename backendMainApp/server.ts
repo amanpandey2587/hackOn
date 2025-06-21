@@ -13,6 +13,8 @@ import userProfileRoutes from "./routes/UserProfile"; // 👈 renamed for clarit
 import { requireAuth } from "@clerk/express";
 import watchHistoryRoutes from "./routes/WatchHistory";
 import audioRoutes from "./routes/getAudio"
+import transcriptRoutes from './routes/transcript';
+
 dotenv.config();
 
 const app = express();
@@ -67,6 +69,7 @@ const startServer = async () => {
 
     app.use(express.json());
     // Set up routes
+    app.use('/api/transcript', transcriptRoutes);
     app.use("/api/parties", partyRoutes);
     app.use("/api/messages", messageRoutes);
     app.use("/api/user-profiles", requireAuth(), userProfileRoutes);

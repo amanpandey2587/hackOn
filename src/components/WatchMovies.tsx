@@ -5,6 +5,8 @@ import { setLoading } from "../redux/userSlice";
 import axios from "axios";
 import { useAuth } from "@clerk/clerk-react";
 import { useNavigate } from "react-router-dom";
+import { AITimestamps } from "./netflix/AITimestamps";
+
 interface TrailerData {
   videoId: string;
   title: string;
@@ -31,12 +33,12 @@ const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
 const MAX_CACHE_SIZE = 100;
 const WatchMovie: React.FC<WatchMovieProps> = (props) => {
   // Log raw props BEFORE destructuring
-  console.log('=== WatchMovie Raw Props Debug ===');
-  console.log('Raw props object:', props);
-  console.log('Props keys:', Object.keys(props));
-  console.log('props.onClose directly:', props.onClose);
-  console.log('Is onClose in props?', 'onClose' in props);
-  
+  console.log("=== WatchMovie Raw Props Debug ===");
+  console.log("Raw props object:", props);
+  console.log("Props keys:", Object.keys(props));
+  console.log("props.onClose directly:", props.onClose);
+  console.log("Is onClose in props?", "onClose" in props);
+
   // Now destructure
   const {
     isOpen,
@@ -49,16 +51,17 @@ const WatchMovie: React.FC<WatchMovieProps> = (props) => {
     totalDuration,
     genre,
   } = props;
-  
-  console.log('=== After Destructuring ===');
-  console.log('onClose:', onClose);
-  console.log('onClose type:', typeof onClose);
-  
+
+  console.log("=== After Destructuring ===");
+  console.log("onClose:", onClose);
+  console.log("onClose type:", typeof onClose);
+
   const dispatch = useDispatch();
   // ... rest of your component
   const [trailerData, setTrailerData] = useState<{
     [key: string]: TrailerData;
   }>({});
+  
   const [isPlaying, setIsPlaying] = useState(false);
   const [showControls, setShowControls] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
@@ -308,30 +311,30 @@ const WatchMovie: React.FC<WatchMovieProps> = (props) => {
       getCachedData,
     ]
   );
-const handleClose = useCallback(async () => {
-  console.log('handleClose called');
-  console.log('props.onClose:', props.onClose);
-  console.log('typeof props.onClose:', typeof props.onClose);
+  const handleClose = useCallback(async () => {
+    console.log("handleClose called");
+    console.log("props.onClose:", props.onClose);
+    console.log("typeof props.onClose:", typeof props.onClose);
 
-  // Update watch history if all conditions are met
-  if (player && isPlayerReady && watchHistoryId) {
-    const finalTime = player.getCurrentTime();
-    try {
-      await axios.patch(`/api/watch-history/${watchHistoryId}`, {
-        watchDuration: finalTime
-      });
-    } catch (error) {
-      console.error('Error updating watch history:', error);
+    // Update watch history if all conditions are met
+    if (player && isPlayerReady && watchHistoryId) {
+      const finalTime = player.getCurrentTime();
+      try {
+        await axios.patch(`/api/watch-history/${watchHistoryId}`, {
+          watchDuration: finalTime,
+        });
+      } catch (error) {
+        console.error("Error updating watch history:", error);
+      }
     }
-  }
-  
-  // Fix: Use props.onClose instead of just onClose
-  if (props.onClose && typeof props.onClose === 'function') {
-    props.onClose();
-  }
-}, [props.onClose, player, isPlayerReady, watchHistoryId]); // Fix: Update dependency
+
+    // Fix: Use props.onClose instead of just onClose
+    if (props.onClose && typeof props.onClose === "function") {
+      props.onClose();
+    }
+  }, [props.onClose, player, isPlayerReady, watchHistoryId]); // Fix: Update dependency
   // Early return if not open
-  
+
   const { getToken } = useAuth();
   const handleResume = useCallback(() => {
     if (player && isPlayerReady && currentPlayTime > 0) {
@@ -566,14 +569,14 @@ const handleClose = useCallback(async () => {
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close Button - Fixed position, always visible */}
-<button
-  onClick={(e) => {
-    console.log('Close button clicked directly');
-    e.stopPropagation(); // Prevent event bubbling
-    handleClose();
-  }}
-  className="absolute top-4 right-4 z-50 bg-black bg-opacity-60 hover:bg-opacity-80 text-white rounded-full w-10 h-10 flex items-center justify-center transition-all duration-200 hover:scale-110"
->
+        <button
+          onClick={(e) => {
+            console.log("Close button clicked directly");
+            e.stopPropagation();
+            handleClose();
+          }}
+          className="absolute top-4 right-4 z-50 bg-black bg-opacity-60 hover:bg-opacity-80 text-white rounded-full w-10 h-10 flex items-center justify-center transition-all duration-200 hover:scale-110"
+        >
           <svg
             className="w-5 h-5"
             fill="none"
@@ -588,6 +591,16 @@ const handleClose = useCallback(async () => {
             />
           </svg>
         </button>
+
+        {/* AI Timestamps Component - Add this here */}
+        {currentTrailer && (
+          <AITimestamps
+            videoId={currentTrailer.videoId}
+            player={player}
+            isPlayerReady={isPlayerReady}
+          />
+        )}
+
         {/* Video Player Section */}
         <div className="relative flex-1 bg-black">
           {currentTrailer ? (
