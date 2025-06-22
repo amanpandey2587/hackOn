@@ -5,71 +5,107 @@ import { SignedOut, SignInButton, useUser } from '@clerk/clerk-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import type { RootState } from "../../redux/store";
 import { useChatContext } from "@/utils/ChatContextProvider";
-import { Button } from "../ui/button";
+import NetflixSearch from "../Search/NetflixSearch";
+import NetflixStreamer from "../Search/NetflixStreamer";
+import Netbar from "../Search/Netbar";
+import { useState } from "react";
 const Header = () => {
-    const { openChatPanel, closeChatPanel, toggleChatPanel, isChatPanelOpen } = useChatContext();
+    const { openChatPanel } = useChatContext();
     const toggle = useSelector((store: RootState) => store.movie.toggle);
     const dispatch = useDispatch();
     const { user } = useUser();
     const navigate = useNavigate();
     const location = useLocation();
 
-    const toggleHandler = () => {
-        dispatch(setToggle());
-    };
+    const [voiceQuery, setVoiceQuery] = useState(''); 
 
+  const handleTranscription = (transcription: string) => {
+    setVoiceQuery(transcription);
+  };
     const goHomeHandler = () => {
         navigate('/');
+        window.scrollTo(0, 0);
     };
 
     const goToSeriesHandler = () => {
         navigate('/netflix/series');
+        window.scrollTo(0, 0);
+    };
+
+    const goToMoviesHandler = () => {
+        navigate('/netflix');
+        window.scrollTo(0, 0);
     };
 
     return (
-        <div className='absolute z-10 flex w-full items-center justify-between px-6 bg-gradient-to-b from-black'>
-            <img
-                className='w-56 cursor-pointer'
-                src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Netflix_2015_logo.svg/1198px-Netflix_2015_logo.svg.png"
-                alt="netflix-logo"
-                onClick={goHomeHandler}
-            />
+        <div className='absolute z-10 flex w-full items-center justify-between px-8 py-4 bg-gradient-to-b from-black/90 to-black/50'>
+            {/* Left section: Logo + Search */}
+            <div className="flex items-center space-x-6">
+                {/* Netflix Logo */}
+                <img
+                    className='w-32 md:w-44 cursor-pointer'
+                    src="https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg"
+                    alt="Netflix Logo"
+                    onClick={goHomeHandler}
+                />
+
+                {/* SearchBar */}
+                <div className="flex items-center space-x-3">
+                <NetflixStreamer onTranscriptionReceived={handleTranscription} />
+                <div className={'flex-1  w-full'}>
+                  <NetflixSearch voiceQuery={voiceQuery} key={voiceQuery || 'default'} />
+                </div>
+              </div>
+            </div>
+
+            {/* Right Section */}
             {user && (
-                <div className='flex items-center'>
-                    {/* <IoIosArrowDropdown size="24px" color='white' /> */}
-                    {/* <h1 className='text-lg font-medium text-white'>{user.fullName}</h1> */}
-                    <div className='ml-4 flex space-x-2'>
-                        <SignedOut>
-                            <SignInButton mode="modal">
-                                <button className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors">
-                                    Sign In
-                                </button>
-                            </SignInButton>
-                        </SignedOut>
-                        <button
-                            onClick={toggleHandler}
-                            className='bg-red-800 hover:bg-red-900 text-white px-4 py-2 rounded text-sm font-medium transition-colors'
-                        >
-                            {toggle ? "Home" : "Search Movie"}
-                        </button>
-                        <button
-                            onClick={goHomeHandler}
-                            className='bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors'
-                        >
-                            Go to Home
-                        </button>
-                        <Button onClick={openChatPanel} className="text-white hover:bg-blue-950 bg-blue-800">
-                            Open Chat
-                        </Button>
-                        {location.pathname !== '/series' && (
-                            <button
-                                onClick={goToSeriesHandler}
-                                className='bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors'
-                            >
-                                Watch Series
+                <div className='flex items-center space-x-4'>
+                    <SignedOut>
+                        <SignInButton mode="modal">
+                            <button className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors">
+                                Sign In
                             </button>
-                        )}
-                    </div>
+                        </SignInButton>
+                    </SignedOut>
+
+                    <button
+                        onClick={goHomeHandler}
+                        className='bg-transparent border border-white/50 hover:border-white text-white px-4 py-2 rounded text-sm font-medium transition-colors'
+                    >
+                        Home
+                    </button>
+
+                    <button
+                        onClick={goToMoviesHandler}
+                        className={`px-4 py-2 rounded text-sm font-medium transition-colors ${
+                            location.pathname === '/netflix'
+                                ? 'bg-red-800 text-white'
+                                : 'bg-red-700 hover:bg-red-800 text-white'
+                        }`}
+                    >
+                        Movies
+                    </button>
+
+                    <button
+                        onClick={openChatPanel}
+                        className='bg-red-700 hover:bg-red-800 text-white px-4 py-2 rounded text-sm font-medium transition-colors'
+                    >
+                        Chat
+                    </button>
+
+                    {location.pathname !== '/series' && (
+                        <button
+                            onClick={goToSeriesHandler}
+                            className={`px-4 py-2 rounded text-sm font-medium transition-colors ${
+                                location.pathname === '/netflix/series'
+                                    ? 'bg-red-800 text-white'
+                                    : 'bg-red-700 hover:bg-red-800 text-white'
+                            }`}
+                        >
+                            Series
+                        </button>
+                    )}
                 </div>
             )}
         </div>

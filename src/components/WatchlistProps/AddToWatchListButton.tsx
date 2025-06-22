@@ -76,7 +76,7 @@ const AddToWatchlistButton: React.FC<AddToWatchlistButtonProps> = ({
         flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200
         ${isAdded 
           ? 'bg-green-500 text-white cursor-default' 
-          : 'bg-blue-600 hover:bg-blue-700 text-white hover:shadow-lg active:scale-95'
+          : 'bg-grey-600 hover:bg-grey-700 text-white hover:shadow-lg active:scale-95'
         }
         ${isLoading ? 'opacity-75 cursor-not-allowed' : ''}
         ${className}

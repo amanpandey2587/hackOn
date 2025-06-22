@@ -7,6 +7,7 @@ import SeriesList from './SeriesList';
 import { useChatContext } from '@/utils/ChatContextProvider';
 import { Button } from '../ui/button';
 import { useNavigate } from 'react-router-dom';
+import Header from './Header';
 interface Show {
   id: string;
   title: string;
@@ -167,50 +168,10 @@ const BrowseSeries: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900">
       <div className="relative bg-gradient-to-r from-red-900/20 to-black/50 border-b border-gray-800">
-        <div className="container mx-auto px-4 py-8">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-            <div className="space-y-2">
-              <h1 className="text-4xl lg:text-5xl font-bold text-white">
-                Netflix Series
-              </h1>
-              <p className="text-gray-300 text-lg">
-                Discover top-rated TV series and shows
-              </p>
-              {lastFetched && (
-                <p className="text-sm text-gray-400">
-                  Last updated: {lastFetched} {isCacheValid && '(Cached)'}
-                </p>
-              )}
-            </div>
-
-            <div className="flex items-center space-x-6 text-sm">
-              <div className="bg-red-600/20 px-4 py-2 rounded-lg border border-red-600/30">
-                <span className="text-red-400 font-semibold">
-                  {filteredShows.length} Series
-                </span>
-              </div>
-              <Button onClick={openChatPanel} className='bg-blue-800 hover:bg-blue-950'>
-                Open Chats
-              </Button>
-              <Button onClick={goHomeHandler} className='bg-red-800 hover:bg-red-950'>
-                Go Back
-              </Button>
-              <button
-                onClick={handleRefresh}
-                disabled={loading}
-                className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors disabled:opacity-50 flex items-center space-x-2"
-              >
-                <svg className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                </svg>
-                <span>{loading ? 'Loading...' : 'Refresh'}</span>
-              </button>
-            </div>
-          </div>
-        </div>
+        <Header/>
       </div>
 
-      <div className="container mx-auto px-4 py-6">
+      <div className="container mx-auto mt-14 px-4 py-6">
         <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700">
           <div className="flex flex-col lg:flex-row gap-4">
             <div className="flex-1">

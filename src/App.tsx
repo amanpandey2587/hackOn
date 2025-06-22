@@ -23,12 +23,16 @@ import BrowseSeries from "./components/netflix/BrowseSeries";
 import { ChatProvider } from "./utils/ChatContextProvider";
 import GlobalChatPanel from "./services/ChatPanelGlobal";
 import FireTVWrappedContainer from "./pages/FireTVWrapper";
+import ScrollToTop from "./utils/ScrollToTop";
+import { Search } from "lucide-react";
+import SearchPage from "./components/Search/SearchComponent";
 const AppContent = () => {
   const location = useLocation();
 
   return (
     <div className="relative min-h-screen bg-black">
       <div className="pt-0">
+        <ScrollToTop/>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/netflix" element={<Netflix />} />
@@ -37,6 +41,7 @@ const AppContent = () => {
           <Route path="/karoke" element={<KaraokeApp />} />
           <Route path="/FireTVWrapped" element={<FireTVWrappedContainer />} />
           <Route path="/netflix/series" element={<BrowseSeries />} />
+          <Route path="/netflix/search" element={<SearchPage/>} />
         </Routes>
         <GlobalChatPanel />
       </div>
