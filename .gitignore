@@ -21,7 +21,12 @@ Thumbs.db
 
 # Environment files
 .env
+backend/.env
+backendMainApp/.env
+nkbackend2/.env
+nkinteractive-backend/.env
 **/.env
+
 # Python cache and virtualenv
 __pycache__/
 *.py[cod]
