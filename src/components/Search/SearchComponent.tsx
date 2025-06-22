@@ -2,26 +2,31 @@ import React, { useState } from 'react';
 import SearchBar from './SearchBar';
 import ContentSlider from './ContentCardSlider';
 
-const SearchPage = () => {
+const SearchPage = ({ voiceQuery = '' }) => { 
   const [searchResults, setSearchResults] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [searchError, setSearchError] = useState('');
+  const [currentQuery, setCurrentQuery] = useState('');
 
-  const handleSearchResults = (results) => {
+  const handleSearchResults = (results:any) => {
     setSearchResults(results);
-    setSearchError(''); 
+    setSearchError('');
   };
 
-  const handleSearchError = (error) => {
+  const handleSearchError = (error:any) => {
     setSearchError(error);
     setSearchResults(null);
   };
 
-  const handleLoadingChange = (loading) => {
+  const handleLoadingChange = (loading:any) => {
     setIsLoading(loading);
   };
 
-  const handleContentClick = (content) => {
+  const handleQueryChange = (query:any) => {
+    setCurrentQuery(query);
+  };
+
+  const handleContentClick = (content:any) => {
     console.log('Content clicked:', content);
   };
 
@@ -33,6 +38,8 @@ const SearchPage = () => {
             onResultsReceived={handleSearchResults}
             onError={handleSearchError}
             onLoadingChange={handleLoadingChange}
+            onQueryChange={handleQueryChange}
+            voiceQuery={voiceQuery} // Pass voice query to SearchBar
             placeholder="Search movies, TV shows, songs, documentaries..."
           />
         </div>

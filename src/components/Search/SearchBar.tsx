@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { Search, X, Globe, AlertCircle, Loader2 } from 'lucide-react';
 
 const SearchBar = ({ 
@@ -7,12 +7,24 @@ const SearchBar = ({
   onError = () => {},
   onLoadingChange = () => {},
   placeholder = "Search movies, TV shows, songs, documentaries...",
+  onQueryChange = () => {},
+  voiceQuery = '' // New prop for voice input
 }) => {
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [selectedLanguage, setSelectedLanguage] = useState('en');
   const searchTimeoutRef = useRef(null);
+
+  // Effect to handle voice query updates
+  useEffect(() => {
+    if (voiceQuery && voiceQuery.trim()) {
+      console.log("Search query in SearchBar is",voiceQuery)
+      setQuery(voiceQuery);
+      // Trigger search with voice query
+      handleSearch(voiceQuery);
+    }
+  }, [voiceQuery]);
 
   const languages = [
     { code: 'en', name: 'English', flag: '🇺🇸' },
@@ -99,6 +111,7 @@ const SearchBar = ({
 
   const handleSearch = useCallback((value) => {
     setQuery(value);
+    onQueryChange(value); // Notify parent of query change
     
     if (searchTimeoutRef.current) {
       clearTimeout(searchTimeoutRef.current);
@@ -112,12 +125,13 @@ const SearchBar = ({
       onResultsReceived([]);
       setError('');
     }
-  }, [performSearch, onResultsReceived]);
+  }, [performSearch, onResultsReceived, onQueryChange]);
 
   const clearSearch = () => {
     setQuery('');
     setError('');
     onResultsReceived([]);
+    onQueryChange(''); // Notify parent of cleared query
     if (searchTimeoutRef.current) {
       clearTimeout(searchTimeoutRef.current);
     }

@@ -5,7 +5,9 @@ import { UserButton, SignOutButton } from '@clerk/clerk-react';
 import { useChatContext } from '@/utils/ChatContextProvider';
 import SearchPage from './Search/SearchComponent';
 import AudioRecorder from './Search/AudioStreamer';
+import { useState, useEffect } from 'react';
 import KaraokeApp from './Karaoke_Mode';
+
 interface NavItem {
   path: string;
   label: string;
@@ -30,16 +32,21 @@ const Navbar: React.FC = () => {
   ];
   
   const { isChatPanelOpen, toggleChatPanel } = useChatContext();
+  const [voiceQuery, setVoiceQuery] = useState(''); 
+
+  const handleTranscription = (transcription: string) => {
+    setVoiceQuery(transcription);
+  };
+
+
 
   return (
     <nav className="bg-gradient-to-b from-blue-950 to-blue-900 backdrop-blur-lg border-b border-blue-800 shadow-md relative z-50 min-h-[140px]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
         <div className="flex h-full">
           
-          {/* Left Portion - Logo and Search */}
           <div className={`flex-1 flex flex-col justify-center py-4 ${!isChatPanelOpen ? 'pr-8' : ''}`}>
             <div className="space-y-4">
-              {/* FireTV Logo */}
               <div className='flex flex-row'>
               <Link to="/" className="text-blue-300 text-3xl font-bold tracking-wide hover:text-white transition-all duration-300 block">
                 FireTV
@@ -98,9 +105,9 @@ const Navbar: React.FC = () => {
               </div>
               
               <div className="flex items-center space-x-3">
-              <AudioRecorder />
+                <AudioRecorder onTranscriptionReceived={handleTranscription} />
                 <div className={`flex-1 ${!isChatPanelOpen ? 'w-[50vw]' : 'w-full'}`}>
-                  <SearchPage />
+                  <SearchPage voiceQuery={voiceQuery} key={voiceQuery || 'default'} />
                 </div>
               </div>
             </div>
