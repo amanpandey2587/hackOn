@@ -183,6 +183,7 @@ const ContentCard: React.FC<ContentCardProps> = ({
   onClick,
   className = ""
 }) => {
+  console.log("Contnetn inthe contnetn card is",content)
   const dispatch = useDispatch();
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);

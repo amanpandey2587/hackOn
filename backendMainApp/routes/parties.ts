@@ -4,7 +4,77 @@ import { Party } from "../models/Party";
 
 const router = express.Router();
 
+<<<<<<< Updated upstream
 const ALLOWED_TAGS = ["action", "adventure", "comedy", "drama", "thriller", "horror", "romance", "sci-fi", "fantasy", "mystery", "crime", "documentary", "musical", "animation", "war", "western", "historical", "family", "biography", "supernatural", "psychological", "noir", "slasher", "movie", "tv-series", "web-series", "anime", "short-film", "mini-series", "docuseries", "reality-show", "talk-show", "stand-up", "live-performance", "anthology", "ova", "ona", "special", "sports", "school", "slice-of-life", "superhero", "dystopian", "post-apocalyptic", "survival", "cyberpunk", "space", "time-travel", "aliens", "vampires", "zombies", "mythology", "crime-investigation", "political", "legal", "medical", "gaming", "idol", "music", "cooking", "travel", "friendship", "coming-of-age"]
+=======
+const ALLOWED_TAGS = [
+  'action',
+  'adventure',
+  'comedy',
+  'drama',
+  'thriller',
+  'horror',
+  'romance',
+  'sci-fi',
+  'fantasy',
+  'mystery',
+  'crime',
+  'documentary',
+  'musical',
+  'animation',
+  'war',
+  'western',
+  'historical',
+  'family',
+  'biography',
+  'supernatural',
+  'psychological',
+  'noir',
+  'slasher',
+  'movie',
+  'tv-series',
+  'web-series',
+  'anime',
+  'short-film',
+  'mini-series',
+  'docuseries',
+  'reality-show',
+  'talk-show',
+  'stand-up',
+  'live-performance',
+  'anthology',
+  'ova',
+  'ona',
+  'special',
+  'sports',
+  'school',
+  'slice-of-life',
+  'superhero',
+  'dystopian',
+  'post-apocalyptic',
+  'survival',
+  'cyberpunk',
+  'space',
+  'time-travel',
+  'aliens',
+  'vampires',
+  'zombies',
+  'mythology',
+  'crime-investigation',
+  'political',
+  'legal',
+  'medical',
+  'gaming',
+  'idol',
+  'music',
+  'cooking',
+  'travel',
+  'friendship',
+  'coming-of-age'
+];
+>>>>>>> Stashed changes
+
+
 
 // Get all parties (hide password field)
 router.get("/", async (req, res) => {

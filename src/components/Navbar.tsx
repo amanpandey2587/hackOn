@@ -7,7 +7,7 @@ import SearchPage from './Search/SearchComponent';
 import AudioRecorder from './Search/AudioStreamer';
 import { useState, useEffect } from 'react';
 import KaraokeApp from './Karaoke_Mode';
-
+import RolMain from './roulette/rolMain';
 interface NavItem {
   path: string;
   label: string;
@@ -27,7 +27,7 @@ const Navbar: React.FC = () => {
     { path: '/youtube', label: 'YouTube', icon: Youtube, color: 'from-red-500 to-red-400' },
     { path: '/apple', label: 'Apple TV+', icon: Monitor, color: 'from-gray-600 to-gray-500' },
     { path: '/karoke', label: 'Karoke Studio', icon: MessageCircle, color: 'from-green-500 to-green-400' },
-    { path: '/twitch', label: 'Twitch', icon: Smartphone, color: 'from-purple-500 to-purple-400' },
+    { path: '/roulette', label: 'Roulette Wheel', icon: Smartphone, color: 'from-purple-500 to-purple-400' },
     { path: '/FireTVWrapped', label: 'FireTVWrapped', icon: Gamepad2, color: 'from-orange-600 to-orange-500' },
   ];
   

@@ -410,16 +410,28 @@ IMPORTANT RULES:
 
 Output Format — JSON array only:
 [
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
   {{"query": "action", "reason": "popular genre", "priority": 8}},
   {{"query": "comedy", "reason": "mood boost", "priority": 7}},
   {{"query": "thriller", "reason": "evening entertainment", "priority": 6}}
+=======
+  {"query": "action", "reason": "popular genre", "priority": 8},
+  {"query": "comedy", "reason": "mood boost", "priority": 7},
+  {"query": "thriller", "reason": "evening entertainment", "priority": 6}
+>>>>>>> Stashed changes
+=======
+  {"query": "action", "reason": "popular genre", "priority": 8},
+  {"query": "comedy", "reason": "mood boost", "priority": 7},
+  {"query": "thriller", "reason": "evening entertainment", "priority": 6}
+>>>>>>> Stashed changes
 ]
 """
         )
 
         # Generate recommendations
         llm = ChatOpenAI(
-            model="gpt-3.5-turbo",
+            model="gpt-4.1-nano",
             temperature=0.7,
             openai_api_key=os.getenv("OPENAI_API_KEY")
         )

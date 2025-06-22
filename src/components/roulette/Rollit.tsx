@@ -3,7 +3,7 @@ import InputForm from './InputForm';
 import RouletteWheel from './RouletteWheel';
 import ResultPanel from './ResultPanel';
 import { useRoulette } from '../../hooks/useRoulette';
-
+import { useUser } from '@clerk/clerk-react';
 interface Props {
   goBack: () => void;
 }
@@ -12,7 +12,11 @@ export default function Rollit({ goBack }: Props) {
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [inputData, setInputData] = useState({});
   const [mode, setMode] = useState<'user' | 'chaos'>('user'); // 🔄 added mode
-  const userId = "user_2yh036LYXpjTfvFhJ2zLjWmmgXn";
+  const { user } = useUser();
+
+  const userId = user.id;
+  console.log("user id is",userId);
+
 
   const {
     titles,

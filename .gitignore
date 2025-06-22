@@ -20,7 +20,12 @@ Thumbs.db
 *.tsbuildinfo
 
 # Environment files
-# .env
+.env
+backend/.env
+backendMainApp/.env
+nkbackend2/.env
+nkinteractive-backend/.env
+**/.env
 
 # Python cache and virtualenv
 __pycache__/
