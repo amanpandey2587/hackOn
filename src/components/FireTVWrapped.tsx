@@ -856,7 +856,7 @@ const AwardsSlide: React.FC<{ data: WrappedData | null }> = ({ data }) => {
   return (
     <div className="text-white">
       <Award className="w-12 h-12 text-purple-400 mb-4" />
-      <h2 className="text-2xl font-bold mb-6">Your 2024 Awards</h2>
+      <h2 className="text-2xl font-bold mb-6">Your 2025 Awards</h2>
 
       <div className="grid grid-cols-2 gap-4">
         {awards.map((award, index) => (
@@ -906,7 +906,7 @@ const SummarySlide: React.FC<{ data: WrappedData | null }> = ({ data }) => {
         <Calendar className="w-16 h-16 mx-auto text-purple-400" />
       </motion.div>
 
-      <h2 className="text-2xl font-bold mb-6">Your 2024 in One Sentence</h2>
+      <h2 className="text-2xl font-bold mb-6">Your 2025 in One Sentence</h2>
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
