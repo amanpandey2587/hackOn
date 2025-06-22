@@ -33,10 +33,10 @@ const AppContent = () => {
           <Route path="/netflix" element={<Netflix />} />
           <Route path="/prime" element={<Prime />} />
           <Route path="/hulu" element={<Hulu />} />
-          <Route path="/karoke" element={<KaraokeApp/>}/>
-          <Route path="/netflix/series" element={<BrowseSeries/>} />
+          <Route path="/karoke" element={<KaraokeApp />} />
+          <Route path="/netflix/series" element={<BrowseSeries />} />
         </Routes>
-        <GlobalChatPanel/>
+        <GlobalChatPanel />
       </div>
     </div>
   );
@@ -117,9 +117,9 @@ function App() {
 
   return (
     <ChatProvider>
-    <Router>
-      <AppContent />
-    </Router>
+      <Router>
+        <AppContent />
+      </Router>
     </ChatProvider>
   );
 }
@@ -240,20 +240,19 @@ function ChatPanelImplement() {
     setSelectedParty(null);
   };
   // KEEP YOUR EXISTING handleCreateParty function as is
-const handleCreateParty = async (data: {
-  title: string;
-  isPrivate: boolean;
-  password?: string;
-}) => {
-  const newParty = await partyService.createParty({
-    ...data,
-    userId: user?.id || "anonymous",
-    username: user?.username || user?.fullName || "Anonymous",
-  });
-  await fetchParties();
-  return newParty;
-};
-
+  const handleCreateParty = async (data: {
+    title: string;
+    isPrivate: boolean;
+    password?: string;
+  }) => {
+    const newParty = await partyService.createParty({
+      ...data,
+      userId: user?.id || "anonymous",
+      username: user?.username || user?.fullName || "Anonymous",
+    });
+    await fetchParties();
+    return newParty;
+  };
 
   const renderCurrentApp = () => {
     switch (currentApp) {
@@ -292,22 +291,20 @@ const handleCreateParty = async (data: {
           onBack={handleBackToSidebar}
         />
       ) : (
-<WatchPartySidebar
-  parties={parties}
-  currentUserId={user?.id || "anonymous"}
-  onJoinParty={handleJoinParty}
-  onLeaveParty={handleLeavePartyFromSidebar}
-  onEnterParty={handleEnterParty}
-  onCreateParty={handleCreateParty}
-  loading={loading}
-  error={error}
-  fetchParties={fetchParties} // <--- ADD THIS!
-/>
+        <WatchPartySidebar
+          parties={parties}
+          currentUserId={user?.id || "anonymous"}
+          onJoinParty={handleJoinParty}
+          onLeaveParty={handleLeavePartyFromSidebar}
+          onEnterParty={handleEnterParty}
+          onCreateParty={handleCreateParty}
+          loading={loading}
+          error={error}
+          fetchParties={fetchParties} // <--- ADD THIS!
+        />
       )}
     </div>
   );
 }
 
 export default App;
-
-

@@ -397,20 +397,22 @@ User Context:
 Weather: {weather}
 Time: {time_context}
 
-Generate 7-10 SIMPLE, ONE-WORD search queries for movies/shows.
+Generate 7–10 SIMPLE, ONE-WORD search queries for movies/shows.
 
-IMPORTANT: Keep queries EXTREMELY SIMPLE:
-- Use single words only: "action", "comedy", "drama"
-- Avoid compound terms
-- Use common genre names
+IMPORTANT RULES:
+- ONLY use words from this array:
+  ["action", "adventure", "comedy", "drama", "thriller", "horror", "romance", "sci-fi", "fantasy", "mystery", "crime", "documentary", "musical", "animation", "war", "western", "historical", "family", "biography", "supernatural", "psychological", "noir", "slasher", "movie", "tv-series", "web-series", "anime", "short-film", "mini-series", "docuseries", "reality-show", "talk-show", "stand-up", "live-performance", "anthology", "ova", "ona", "special", "sports", "school", "slice-of-life", "superhero", "dystopian", "post-apocalyptic", "survival", "cyberpunk", "space", "time-travel", "aliens", "vampires", "zombies", "mythology", "crime-investigation", "political", "legal", "medical", "gaming", "idol", "music", "cooking", "travel", "friendship", "coming-of-age"]
 
-Output Format - JSON array only:
+- Use **single words only**
+- Avoid compound terms (e.g., no “sci fi” — use “sci-fi”)
+- Keep it extremely simple and commonly understood
+- Tailor choices based on mood, weather, and time
+
+Output Format — JSON array only:
 [
   {{"query": "action", "reason": "popular genre", "priority": 8}},
   {{"query": "comedy", "reason": "mood boost", "priority": 7}},
-  {{"query": "thriller", "reason": "evening entertainment", "priority": 6}},
-  {{"query": "drama", "reason": "rainy weather", "priority": 5}},
-  {{"query": "horror", "reason": "evening mood", "priority": 4}}
+  {{"query": "thriller", "reason": "evening entertainment", "priority": 6}}
 ]
 """
         )

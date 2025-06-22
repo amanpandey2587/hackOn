@@ -15,6 +15,8 @@ import { Label } from "../ui/label";
 import { Checkbox } from "../ui/checkbox";
 import { Lock, Search, Plus } from "lucide-react";
 import { partyService } from "../../services/PartyService";
+import { Sparkles } from "lucide-react";
+import axios from "axios";
 
 // -- TYPES --
 type PartyMember = {
@@ -48,6 +50,7 @@ type Props = {
   loading?: boolean;
   error?: string | null;
   fetchParties: () => Promise<void>;
+  isRecommended?: boolean;
 };
 
 export const WatchPartySidebar = ({
@@ -60,6 +63,7 @@ export const WatchPartySidebar = ({
   loading,
   error,
   fetchParties,
+  isRecommended,
 }: Props) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showCreateDialog, setShowCreateDialog] = useState(false);
@@ -71,7 +75,9 @@ export const WatchPartySidebar = ({
   const [newPartyTags, setNewPartyTags] = useState<string[]>([]);
   const [allowedTags, setAllowedTags] = useState<string[]>([]);
   const [tagsError, setTagsError] = useState<string>("");
-
+  const [showRecommended, setShowRecommended] = useState(false);
+  const [recommendedTags, setRecommendedTags] = useState<string[]>([]);
+  const [loadingRecommendations, setLoadingRecommendations] = useState(false);
   // Fetch allowed tags from backend
   useEffect(() => {
     if (showCreateDialog) {
@@ -139,16 +145,205 @@ export const WatchPartySidebar = ({
       setCreating(false);
     }
   };
+  // Add these imports at the top
 
+  // Add these states after the existing states
+
+  // Update the handleRecommendedParties function
+  const handleRecommendedParties = async () => {
+    try {
+      setLoadingRecommendations(true);
+
+      // First, fetch allowed tags if we don't have them
+      let availableTags = allowedTags;
+      if (allowedTags.length === 0) {
+        try {
+          availableTags = await partyService.getAllowedTags();
+          setAllowedTags(availableTags);
+        } catch (error) {
+          console.error("Failed to fetch allowed tags:", error);
+          // Use a hardcoded list as fallback
+          availableTags = [
+            "action",
+            "adventure",
+            "comedy",
+            "drama",
+            "thriller",
+            "horror",
+            "romance",
+            "sci-fi",
+            "fantasy",
+            "mystery",
+            "crime",
+            "documentary",
+            "musical",
+            "animation",
+            "war",
+            "western",
+            "historical",
+            "family",
+            "biography",
+            "supernatural",
+            "psychological",
+            "noir",
+            "slasher",
+            "movie",
+            "tv-series",
+            "web-series",
+            "anime",
+            "short-film",
+            "mini-series",
+            "docuseries",
+            "reality-show",
+            "talk-show",
+            "stand-up",
+            "live-performance",
+            "anthology",
+            "ova",
+            "ona",
+            "special",
+            "sports",
+            "school",
+            "slice-of-life",
+            "superhero",
+            "dystopian",
+            "post-apocalyptic",
+            "survival",
+            "cyberpunk",
+            "space",
+            "time-travel",
+            "aliens",
+            "vampires",
+            "zombies",
+            "mythology",
+            "crime-investigation",
+            "political",
+            "legal",
+            "medical",
+            "gaming",
+            "idol",
+            "music",
+            "cooking",
+            "travel",
+            "friendship",
+            "coming-of-age",
+          ];
+        }
+      }
+
+      // Fetch recommendation queries from your FastAPI endpoint
+      const response = await axios.post(
+        "http://127.0.0.1:8000/api/generate-recommendations",
+        {
+          user_id: currentUserId,
+          limit: 7,
+        }
+      );
+
+      const { search_queries } = response.data;
+      console.log("Received queries:", search_queries);
+      console.log("Available tags:", availableTags);
+
+      // Extract queries directly since they already match allowed tags
+      const extractedTags = search_queries
+        .map(
+          (queryObj: { query: string; reason: string; priority: number }) => {
+            const query = queryObj.query.toLowerCase().trim();
+
+            // Find matching allowed tag (case-insensitive)
+            const matchingTag = availableTags.find(
+              (tag) => tag.toLowerCase() === query
+            );
+
+            if (matchingTag) {
+              return matchingTag;
+            }
+
+            // Handle special cases
+            if (
+              query === "sci-fi" ||
+              query === "science fiction" ||
+              query === "scifi"
+            ) {
+              const sciFiTag = availableTags.find(
+                (tag) => tag.toLowerCase() === "sci-fi"
+              );
+              if (sciFiTag) return sciFiTag;
+            }
+
+            return null;
+          }
+        )
+        .filter((tag): tag is string => tag !== null);
+
+      // Remove duplicates
+      const uniqueTags = Array.from(new Set(extractedTags));
+
+      console.log("Extracted tags:", uniqueTags);
+
+      setRecommendedTags(uniqueTags);
+      setShowRecommended(true);
+    } catch (error) {
+      console.error("Failed to get recommendations:", error);
+      // Fallback to some popular tags if recommendation service fails
+      setRecommendedTags(["action", "comedy", "drama", "thriller", "sci-fi"]);
+      setShowRecommended(true);
+    } finally {
+      setLoadingRecommendations(false);
+    }
+  };
+
+  // Update the filteredParties function
   const filteredParties = () => {
-    return parties.filter((p) =>
-      p.title.toLowerCase().includes(searchTerm.toLowerCase())
+    let filtered = parties;
+
+    // Debug: Log all parties with their tags
+    console.log(
+      "All parties with tags:",
+      parties.map((p) => ({ title: p.title, tags: p.tags }))
     );
+
+    // Apply search filter
+    if (searchTerm) {
+      filtered = filtered.filter((p) =>
+        p.title.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Apply recommendation filter
+    if (showRecommended && recommendedTags.length > 0) {
+      console.log("Filtering with tags:", recommendedTags); // Debug log
+
+      filtered = filtered.filter((p) => {
+        const hasMatchingTag =
+          p.tags?.some((tag) => recommendedTags.includes(tag)) || false;
+        if (hasMatchingTag) {
+          console.log(`Party "${p.title}" matches with tags:`, p.tags); // Debug log
+        }
+        return hasMatchingTag;
+      });
+
+      console.log("Filtered parties count:", filtered.length); // Debug log
+    }
+
+    return filtered;
+  };
+
+  // Add this to clear recommendations when needed
+  const clearRecommendations = () => {
+    setShowRecommended(false);
+    setRecommendedTags([]);
   };
 
   return (
     <>
-      <Card className="w-full h-full bg-gradient-to-b from-slate-950 to-slate-900 border-2 border-slate-700 shadow-2xl flex flex-col">
+      <Card
+        className={`p-2 mb-4 bg-gradient-to-br ${
+          isRecommended
+            ? "from-purple-900/50 to-slate-800 border-2 border-purple-600"
+            : "from-slate-900 to-slate-800 border-2 border-slate-700"
+        } hover:border-blue-500 focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-400/50 transition-all duration-300 rounded-xl shadow-xl hover:shadow-2xl hover:shadow-blue-500/20`}
+      >
         <div className="p-6 border-b-2 border-slate-700 bg-gradient-to-r from-blue-600 to-blue-700">
           <div className="flex justify-between items-center">
             <h2 className="text-2xl font-bold text-white">Watch Parties</h2>
@@ -164,7 +359,9 @@ export const WatchPartySidebar = ({
         </div>
 
         {/* Search input */}
-        <div className="p-6 pb-4">
+        {/* Search and Recommendations section */}
+        <div className="p-6 pb-4 space-y-4">
+          {/* Search input */}
           <div className="relative">
             <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
             <Input
@@ -174,6 +371,55 @@ export const WatchPartySidebar = ({
               className="pl-12 pr-4 py-3 text-lg bg-slate-800 border-2 border-slate-600 text-white placeholder-slate-400 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30 transition-all duration-200"
             />
           </div>
+
+          {/* Recommended Parties Button */}
+          <Button
+            onClick={
+              showRecommended ? clearRecommendations : handleRecommendedParties
+            }
+            disabled={loadingRecommendations}
+            className={`w-full py-3 text-lg font-semibold rounded-lg transition-all duration-200 flex items-center justify-center gap-2 ${
+              showRecommended
+                ? "bg-purple-600/20 border-2 border-purple-500 text-purple-300 hover:bg-purple-600/30"
+                : "bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white shadow-lg hover:shadow-purple-500/30"
+            }`}
+          >
+            {loadingRecommendations ? (
+              <>
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                Getting Recommendations...
+              </>
+            ) : showRecommended ? (
+              <>
+                <Sparkles className="w-5 h-5" />
+                Clear Recommendations ({recommendedTags.length} tags)
+              </>
+            ) : (
+              <>
+                <Sparkles className="w-5 h-5" />
+                Recommended Parties
+              </>
+            )}
+          </Button>
+
+          {/* Show active recommendation tags */}
+          {showRecommended && recommendedTags.length > 0 && (
+            <div className="p-3 bg-purple-500/10 border border-purple-500/30 rounded-lg">
+              <p className="text-sm text-purple-300 mb-2">
+                Filtering by recommendations:
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {recommendedTags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="bg-purple-600/20 text-xs px-2 py-1 rounded-full text-purple-300 font-medium border border-purple-500/30"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         <ScrollArea className="p-6 pt-2 flex-1 overflow-y-auto">
@@ -194,7 +440,9 @@ export const WatchPartySidebar = ({
             <div className="text-center py-8">
               <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-6">
                 <p className="text-slate-400 text-lg">No parties found</p>
-                <p className="text-slate-500 text-sm mt-2">Try creating a new one!</p>
+                <p className="text-slate-500 text-sm mt-2">
+                  Try creating a new one!
+                </p>
               </div>
             </div>
           )}
@@ -211,6 +459,10 @@ export const WatchPartySidebar = ({
                     tags={p.tags}
                     members={p.members.length}
                     isJoined={isJoined}
+                    isRecommended={
+                      showRecommended &&
+                      p.tags?.some((tag) => recommendedTags.includes(tag))
+                    }
                     onJoin={() => (isJoined ? onEnterParty(p) : onJoinParty(p))}
                     onLeave={isJoined ? () => onLeaveParty(p._id) : undefined}
                   />
@@ -223,12 +475,19 @@ export const WatchPartySidebar = ({
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
         <DialogContent className="sm:max-w-[500px] bg-gradient-to-br from-slate-900 to-slate-800 border-2 border-slate-700 text-white">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-bold text-white">Create New Watch Party</DialogTitle>
+            <DialogTitle className="text-2xl font-bold text-white">
+              Create New Watch Party
+            </DialogTitle>
           </DialogHeader>
           <div className="grid gap-6 py-6">
             {/* Party name input */}
             <div className="grid gap-3">
-              <Label htmlFor="title" className="text-lg font-semibold text-slate-200">Party Name</Label>
+              <Label
+                htmlFor="title"
+                className="text-lg font-semibold text-slate-200"
+              >
+                Party Name
+              </Label>
               <Input
                 id="title"
                 value={newPartyTitle}
@@ -261,7 +520,12 @@ export const WatchPartySidebar = ({
             {/* Password field */}
             {newPartyPrivate && (
               <div className="grid gap-3">
-                <Label htmlFor="password" className="text-lg font-semibold text-slate-200">Password</Label>
+                <Label
+                  htmlFor="password"
+                  className="text-lg font-semibold text-slate-200"
+                >
+                  Password
+                </Label>
                 <Input
                   id="password"
                   type="password"
@@ -275,7 +539,9 @@ export const WatchPartySidebar = ({
 
             {/* Tags section */}
             <div className="grid gap-3">
-              <Label className="text-lg font-semibold text-slate-200">Tags</Label>
+              <Label className="text-lg font-semibold text-slate-200">
+                Tags
+              </Label>
               {tagsError && (
                 <div className="bg-red-500/20 border border-red-500/30 rounded-lg p-3">
                   <span className="text-red-400 font-medium">{tagsError}</span>

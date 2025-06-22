@@ -631,7 +631,7 @@ export default function KaraokeApp() {
       </div>
 
       {/* Lyrics Display with Progress Bar */}
-      <div className="relative z-10 pt-12">
+      <div className="relative z-10 pt-20">
         <LyricDisplay audioRef={audioRef} currentTrack={currentTrack} />
       </div>
 
