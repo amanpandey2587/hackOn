@@ -413,79 +413,89 @@ const FireTVWrapped: React.FC<{ userId: string }> = ({ userId }) => {
     return "Night Owl 🦉";
   };
 
-const calculateMoodContentPairs = (watchHistory: any[], moodData: any) => {
-  if (!moodData.moods || moodData.moods.length === 0 || watchHistory.length === 0) {
-    return [];
-  }
-
-  // Create time windows (e.g., morning, afternoon, evening, night)
-  const getTimeWindow = (date: Date) => {
-    const hour = date.getHours();
-    if (hour >= 5 && hour < 12) return 'Morning';
-    if (hour >= 12 && hour < 17) return 'Afternoon';
-    if (hour >= 17 && hour < 21) return 'Evening';
-    return 'Night';
-  };
-
-  // Group moods by time window
-  const moodsByTimeWindow: Record<string, Record<string, number>> = {};
-  moodData.moods.forEach((mood: any) => {
-    const window = getTimeWindow(new Date(mood.timestamp));
-    if (!moodsByTimeWindow[window]) {
-      moodsByTimeWindow[window] = {};
+  const calculateMoodContentPairs = (watchHistory: any[], moodData: any) => {
+    if (
+      !moodData.moods ||
+      moodData.moods.length === 0 ||
+      watchHistory.length === 0
+    ) {
+      return [];
     }
-    moodsByTimeWindow[window][mood.emotion] = 
-      (moodsByTimeWindow[window][mood.emotion] || 0) + 1;
-  });
 
-  // Group watch history by time window and genre
-  const genresByTimeWindow: Record<string, Record<string, number>> = {};
-  watchHistory.forEach((item: any) => {
-    const window = getTimeWindow(new Date(item.watchedAt));
-    if (!genresByTimeWindow[window]) {
-      genresByTimeWindow[window] = {};
-    }
-    item.genre.forEach((g: string) => {
-      genresByTimeWindow[window][g] = 
-        (genresByTimeWindow[window][g] || 0) + 1;
+    // Create time windows (e.g., morning, afternoon, evening, night)
+    const getTimeWindow = (date: Date) => {
+      const hour = date.getHours();
+      if (hour >= 5 && hour < 12) return "Morning";
+      if (hour >= 12 && hour < 17) return "Afternoon";
+      if (hour >= 17 && hour < 21) return "Evening";
+      return "Night";
+    };
+
+    // Group moods by time window
+    const moodsByTimeWindow: Record<string, Record<string, number>> = {};
+    moodData.moods.forEach((mood: any) => {
+      const window = getTimeWindow(new Date(mood.timestamp));
+      if (!moodsByTimeWindow[window]) {
+        moodsByTimeWindow[window] = {};
+      }
+      moodsByTimeWindow[window][mood.emotion] =
+        (moodsByTimeWindow[window][mood.emotion] || 0) + 1;
     });
-  });
 
-  // Find patterns
-  const patterns: Array<{ mood: string; genre: string; occurrences: number }> = [];
-  
-  Object.keys(moodsByTimeWindow).forEach(window => {
-    const moods = moodsByTimeWindow[window];
-    const genres = genresByTimeWindow[window];
-    
-    if (moods && genres) {
-      // Find dominant mood in this time window
-      const dominantMood = Object.entries(moods)
-        .sort(([,a], [,b]) => b - a)[0]?.[0];
-      
-      // Find dominant genre in this time window
-      const dominantGenre = Object.entries(genres)
-        .sort(([,a], [,b]) => b - a)[0]?.[0];
-      
-      if (dominantMood && dominantGenre) {
-        const existing = patterns.find(
-          p => p.mood === dominantMood && p.genre === dominantGenre
-        );
-        if (existing) {
-          existing.occurrences++;
-        } else {
-          patterns.push({
-            mood: dominantMood,
-            genre: dominantGenre,
-            occurrences: 1
-          });
+    // Group watch history by time window and genre
+    const genresByTimeWindow: Record<string, Record<string, number>> = {};
+    watchHistory.forEach((item: any) => {
+      const window = getTimeWindow(new Date(item.watchedAt));
+      if (!genresByTimeWindow[window]) {
+        genresByTimeWindow[window] = {};
+      }
+      item.genre.forEach((g: string) => {
+        genresByTimeWindow[window][g] =
+          (genresByTimeWindow[window][g] || 0) + 1;
+      });
+    });
+
+    // Find patterns
+    const patterns: Array<{
+      mood: string;
+      genre: string;
+      occurrences: number;
+    }> = [];
+
+    Object.keys(moodsByTimeWindow).forEach((window) => {
+      const moods = moodsByTimeWindow[window];
+      const genres = genresByTimeWindow[window];
+
+      if (moods && genres) {
+        // Find dominant mood in this time window
+        const dominantMood = Object.entries(moods).sort(
+          ([, a], [, b]) => b - a
+        )[0]?.[0];
+
+        // Find dominant genre in this time window
+        const dominantGenre = Object.entries(genres).sort(
+          ([, a], [, b]) => b - a
+        )[0]?.[0];
+
+        if (dominantMood && dominantGenre) {
+          const existing = patterns.find(
+            (p) => p.mood === dominantMood && p.genre === dominantGenre
+          );
+          if (existing) {
+            existing.occurrences++;
+          } else {
+            patterns.push({
+              mood: dominantMood,
+              genre: dominantGenre,
+              occurrences: 1,
+            });
+          }
         }
       }
-    }
-  });
+    });
 
-  return patterns.sort((a, b) => b.occurrences - a.occurrences).slice(0, 5);
-};
+    return patterns.sort((a, b) => b.occurrences - a.occurrences).slice(0, 5);
+  };
 
   const slides = [
     <IntroSlide key="intro" data={wrappedData} />,
@@ -496,10 +506,10 @@ const calculateMoodContentPairs = (watchHistory: any[], moodData: any) => {
     <AwardsSlide key="awards" data={wrappedData} />,
     <SummarySlide key="summary" data={wrappedData} />,
   ];
-  const navigate=useNavigate()
+  const navigate = useNavigate();
   const goHomeHandler = () => {
-    navigate('/');
-  }
+    navigate("/");
+  };
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % slides.length);
   };
@@ -520,67 +530,63 @@ const calculateMoodContentPairs = (watchHistory: any[], moodData: any) => {
     );
   }
 
-  
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-black to-blue-900 flex items-center justify-center p-4">
-    <div className="max-w-md w-full space-y-4">
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={currentSlide}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          transition={{ duration: 0.5 }}
-          className="bg-black/40 backdrop-blur-lg rounded-3xl p-8 shadow-2xl border border-purple-500/20 space-y-4 relative"
-        >
-          <div className="flex justify-end">
-            <button
-              onClick={goHomeHandler}
-              className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors"
-            >
-              Go to Home
-            </button>
+      <div className="max-w-md w-full space-y-4">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentSlide}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.5 }}
+            className="bg-black/40 backdrop-blur-lg rounded-3xl p-8 shadow-2xl border border-purple-500/20 space-y-4 relative"
+          >
+            <div className="flex justify-end">
+              <button
+                onClick={goHomeHandler}
+                className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors"
+              >
+                Go to Home
+              </button>
+            </div>
+
+            {slides[currentSlide]}
+          </motion.div>
+        </AnimatePresence>
+
+        <div className="flex justify-between items-center mt-6">
+          <button
+            onClick={prevSlide}
+            className="p-3 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+            disabled={currentSlide === 0}
+          >
+            <ChevronLeft className="w-6 h-6 text-white" />
+          </button>
+
+          <div className="flex gap-2">
+            {slides.map((_, index) => (
+              <div
+                key={index}
+                className={`h-2 rounded-full transition-all ${
+                  index === currentSlide
+                    ? "w-8 bg-purple-500"
+                    : "w-2 bg-white/30"
+                }`}
+              />
+            ))}
           </div>
-  
-          {slides[currentSlide]}
-        </motion.div>
-      </AnimatePresence>
-  
-      <div className="flex justify-between items-center mt-6">
-        <button
-          onClick={prevSlide}
-          className="p-3 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
-          disabled={currentSlide === 0}
-        >
-          <ChevronLeft className="w-6 h-6 text-white" />
-        </button>
-  
-        <div className="flex gap-2">
-          {slides.map((_, index) => (
-            <div
-              key={index}
-              className={`h-2 rounded-full transition-all ${
-                index === currentSlide
-                  ? "w-8 bg-purple-500"
-                  : "w-2 bg-white/30"
-              }`}
-            />
-          ))}
+
+          <button
+            onClick={nextSlide}
+            className="p-3 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+            disabled={currentSlide === slides.length - 1}
+          >
+            <ChevronRight className="w-6 h-6 text-white" />
+          </button>
         </div>
-  
-        <button
-          onClick={nextSlide}
-          className="p-3 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
-          disabled={currentSlide === slides.length - 1}
-        >
-          <ChevronRight className="w-6 h-6 text-white" />
-        </button>
       </div>
     </div>
-  </div>
-  
-
   );
 };
 
@@ -763,7 +769,8 @@ const MoodSlide: React.FC<{ data: MoodData | undefined }> = ({ data }) => {
         {data.topMoodContentPairs.slice(0, 2).map((pair, index) => (
           <div key={index} className="flex justify-between items-center mb-1">
             <span className="text-sm">
-              {moodEmojis[pair.mood]} + {pair.genre}
+              {moodEmojis[pair.mood]} + {" "}
+              {pair.genre !== "null" ? pair.genre : "Voice commands"}
             </span>
             <span className="text-xs text-gray-400">
               {pair.occurrences} times
