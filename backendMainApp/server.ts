@@ -14,7 +14,7 @@ import audioRoutes from "./routes/getAudio";
 import transcriptRoutes from "./routes/transcript";
 import moodHistoryRoutes from "./routes/moodHistory";
 import { requireAuth } from "@clerk/express";
-
+import watchListRoutes from "./routes/WatchList"
 dotenv.config();
 
 const app = express();
@@ -157,7 +157,7 @@ const startServer = async () => {
 
     // Protected routes
     app.use("/api/user-profiles", requireAuth(), userProfileRoutes);
-
+    app.use("/api/watch-list",requireAuth(),watchListRoutes)
     // Other routes
     app.use("/api/parties", partyRoutes);
     app.use("/api/messages", messageRoutes);
