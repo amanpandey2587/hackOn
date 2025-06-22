@@ -75,6 +75,7 @@ const ALLOWED_TAGS = [
 >>>>>>> Stashed changes
 
 
+
 // Get all parties (hide password field)
 router.get("/", async (req, res) => {
   try {
