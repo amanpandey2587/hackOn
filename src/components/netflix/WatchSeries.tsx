@@ -3,7 +3,8 @@ import { useShowDetails } from '../../hooks/useNetflixTVShows';
 import ShowDetails from './ShowDetails';
 import axios from 'axios';
 import { useAuth } from '@clerk/clerk-react';
-
+import InteractiveContainer from '../poll,quiz/InteractiveContainer'
+import { Button } from '../ui/button';
 interface Show {
   id: string;
   title: string;
@@ -72,6 +73,7 @@ const WatchSeries: React.FC<WatchSeriesProps> = ({ isOpen, onClose, show, initia
   const [selectedSeason, setSelectedSeason] = useState(1);
   const [selectedEpisode, setSelectedEpisode] = useState(1);
   const [viewMode, setViewMode] = useState<'overview' | 'details' | 'watch'>(initialViewMode);
+  const [showMoreInfo, setShowMoreInfo] = useState(false);
   const { getToken } = useAuth();
   const playerRef = useRef<HTMLDivElement>(null);
   const controlsTimeoutRef = useRef<number | null>(null);
@@ -710,34 +712,55 @@ const WatchSeries: React.FC<WatchSeriesProps> = ({ isOpen, onClose, show, initia
               </div>
 
               {/* Action Buttons */}
-              <div className="flex space-x-4 pt-4">
-                <button
-                  onClick={handleWatchNow}
-                  disabled={isLoadingTrailer}
-                  className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
-                >
-                  {isLoadingTrailer ? (
-                    <>
-                      <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
-                      <span>Loading...</span>
-                    </>
-                  ) : (
-                    <>
-                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M8 5v14l11-7z"/>
-                      </svg>
-                      <span>Watch Now</span>
-                    </>
-                  )}
-                </button>
+              <div className="flex flex-col items-center pt-4 space-y-4">
+  {/* Buttons row */}
+  <div className="flex space-x-4">
+    <button
+      onClick={handleWatchNow}
+      disabled={isLoadingTrailer}
+      className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+    >
+      {isLoadingTrailer ? (
+        <>
+          <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
+          <span>Loading...</span>
+        </>
+      ) : (
+        <>
+          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M8 5v14l11-7z" />
+          </svg>
+          <span>Watch Now</span>
+        </>
+      )}
+    </button>
 
-                <button
-                  onClick={handleViewDetails}
-                  className="bg-gray-700 hover:bg-gray-600 text-white px-8 py-3 rounded-lg font-semibold transition-colors"
-                >
-                  View Details
-                </button>
-              </div>
+    <button
+      onClick={handleViewDetails}
+      className="bg-gray-700 hover:bg-gray-600 text-white px-8 py-3 rounded-lg font-semibold transition-colors"
+    >
+      View Details
+    </button>
+
+    <button
+      onClick={() => setShowMoreInfo(!showMoreInfo)}
+      className="bg-purple-600 hover:bg-purple-700  text-white font-bold px-8 py-3 rounded-lg font-semi bold transition-colors"
+    >
+      Interactive Games
+    </button>
+  </div>
+
+  {/* Interactive Games below buttons */}
+  {showMoreInfo && (
+    <div className="border-t border-gray-700 pt-3 mt-3 w-full flex justify-center">
+      <InteractiveContainer
+        title={show.title}
+        // genre={show.genre}
+      />
+    </div>
+  )}
+</div>
+
             </div>
           </div>
         </div>

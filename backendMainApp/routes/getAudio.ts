@@ -171,10 +171,10 @@ router.get("/mood-history", requireAuth(), async (req: any, res: any) => {
 
     const moodHistory = await MoodService.getUserMoodHistory(userId, limit);
 
-    console.log(`[REQUEST-${requestId}] Mood history fetched:`, {
-      userId,
-      recordsFound: moodHistory?.length || 0,
-    });
+    // console.log(`[REQUEST-${requestId}] Mood history fetched:`, {
+    //   userId,
+    //   recordsFound: moodHistory?.length || 0,
+    // });
 
     return res.json({
       success: true,

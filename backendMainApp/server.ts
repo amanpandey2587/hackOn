@@ -1,25 +1,25 @@
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
-import { Webhook } from "svix";
 import dotenv from "dotenv";
+import { Server } from "socket.io";
+import http from "http";
 import { setupSocket } from "./socket";
 import { connectDB } from "./db";
 import partyRoutes from "./routes/parties";
-import { Server } from "socket.io";
-import http from "http";
 import messageRoutes from "./routes/messages";
-import userProfileRoutes from "./routes/UserProfile"; // 👈 renamed for clarity
-import { requireAuth } from "@clerk/express";
+import userProfileRoutes from "./routes/UserProfile";
 import watchHistoryRoutes from "./routes/WatchHistory";
 import audioRoutes from "./routes/getAudio";
 import transcriptRoutes from "./routes/transcript";
 import moodHistoryRoutes from "./routes/moodHistory";
+import { requireAuth } from "@clerk/express";
+
 dotenv.config();
 
 const app = express();
 
-// Set up middleware FIRST, before creating the server
+// Middleware
 app.use(
   cors({
     origin: "http://localhost:5173",
@@ -29,26 +29,26 @@ app.use(
 app.use(express.json());
 
 // Logging middleware
-app.use((req, res, next) => {
+app.use((req:any, res:any, next) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
   next();
 });
 
 // Test route
-app.get("/api/test", (req, res) => {
+app.get("/api/test", (req:any, res:any) => {
   res.json({ message: "API is working" });
 });
 
-// Root route for debugging
-app.get("/", (req, res) => {
+// Root route
+app.get("/", (req:any, res:any) => {
   res.json({
     message: "Server is running",
     routes: ["/api/parties", "/api/messages", "/api/test"],
   });
 });
 
-// Add this to server.ts
-app.get("/api/debug/all-users", async (req, res) => {
+// Debug route: all users
+app.get("/api/debug/all-users", async (req:any, res:any) => {
   try {
     const MoodHistory = mongoose.model("MoodHistory");
     const WatchHistory = mongoose.model("WatchHistory");
@@ -56,7 +56,6 @@ app.get("/api/debug/all-users", async (req, res) => {
     const allMoodUsers = await MoodHistory.distinct("userId");
     const allWatchUsers = await WatchHistory.distinct("userId");
 
-    // Get sample data
     const sampleMood = await MoodHistory.findOne();
     const sampleWatch = await WatchHistory.findOne();
 
@@ -80,23 +79,30 @@ app.get("/api/debug/all-users", async (req, res) => {
           }
         : null,
     });
-  } catch (error) {
+  } catch (err) {
+    const error = err as Error;
     res.status(500).json({ error: error.message });
   }
 });
 
-app.get("/api/debug/db-info", async (req, res) => {
+// Debug route: db info
+app.get("/api/debug/db-info", async (req:any, res:any) => {
   try {
-    const dbName = mongoose.connection.db.databaseName;
-    const collections = await mongoose.connection.db
-      .listCollections()
-      .toArray();
+    const db = mongoose.connection.db;
 
-    // Check specific user data
+    if (!db) {
+      throw new Error("Database not connected");
+    }
+
+    const dbName = db.databaseName;
+    console.log("db name is", dbName);
+
+    const collections = await db.listCollections().toArray();
+
     const { userId } = req.query;
     let userData = {};
 
-    if (userId) {
+    if (userId && typeof userId === "string") {
       const MoodHistory = mongoose.model("MoodHistory");
       const WatchHistory = mongoose.model("WatchHistory");
 
@@ -107,7 +113,7 @@ app.get("/api/debug/db-info", async (req, res) => {
         moodHistoryFound: !!moodData,
         watchHistoryCount: watchData.length,
         moodId: moodData?._id,
-        watchIds: watchData.map((w) => w._id),
+        watchIds: watchData.map((w: any) => w._id),
       };
     }
 
@@ -117,12 +123,13 @@ app.get("/api/debug/db-info", async (req, res) => {
       collections: collections.map((c) => c.name),
       userData,
     });
-  } catch (error) {
+  } catch (err) {
+    const error = err as Error;
     res.status(500).json({ error: error.message });
   }
 });
 
-// NOW create the HTTP server with the configured app
+// Create HTTP server
 const server = http.createServer(app);
 
 const io = new Server(server, {
@@ -134,31 +141,27 @@ const io = new Server(server, {
 
 const startServer = async () => {
   try {
-    // Connect to DB first
+    // Connect to DB
     await connectDB();
     console.log("✅ Database connected");
 
-    // Set up socket.io
+    // Setup socket.io
     setupSocket(io);
     console.log("✅ Socket.io configured");
 
-    app.use(express.json());
-    // Set up routes
-    // In server.ts, update the routes section:
-
-    // Public routes (no auth required)
+    // Public routes
     app.use("/api/transcript", transcriptRoutes);
     app.use("/api/get-audio", audioRoutes);
-    app.use("/api/mood-history", moodHistoryRoutes); // Move this to public
-    app.use("/api/watch-history", watchHistoryRoutes); // This now has both public and protected routes
+    app.use("/api/mood-history", moodHistoryRoutes);
+    app.use("/api/watch-history", watchHistoryRoutes);
 
-    // Protected routes (require auth)
+    // Protected routes
     app.use("/api/user-profiles", requireAuth(), userProfileRoutes);
 
     // Other routes
     app.use("/api/parties", partyRoutes);
     app.use("/api/messages", messageRoutes);
-    // Add this after all app.use() calls in server.ts
+
     console.log("Registered routes:");
     app._router.stack.forEach((middleware: any) => {
       if (middleware.route) {
@@ -176,7 +179,8 @@ const startServer = async () => {
         });
       }
     });
-    // Start the server
+
+    // Start server
     server.listen(4000, () => {
       console.log("✅ Server running on http://localhost:4000");
       console.log("✅ Available routes:");
@@ -186,8 +190,9 @@ const startServer = async () => {
       console.log("   POST /api/parties");
       console.log("   *    /api/messages/*");
     });
-  } catch (error) {
-    console.error("❌ Failed to start server:", error);
+  } catch (err) {
+    const error = err as Error;
+    console.error("❌ Failed to start server:", error.message);
     process.exit(1);
   }
 };

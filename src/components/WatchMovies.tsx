@@ -6,7 +6,7 @@ import axios from "axios";
 import { useAuth } from "@clerk/clerk-react";
 import { useNavigate } from "react-router-dom";
 import { AITimestamps } from "./netflix/AITimestamps";
-
+import InteractiveContainer from "../components/poll,quiz/InteractiveContainer";
 interface TrailerData {
   videoId: string;
   title: string;
@@ -358,14 +358,14 @@ const WatchMovie: React.FC<WatchMovieProps> = (props) => {
         );
       } catch (error) {
         console.error("❌ [FINAL_UPDATE] Error updating watch history:", error);
-        if (error.response) {
+        if (error) {
           console.error(
             "❌ [FINAL_UPDATE] Error response:",
-            error.response.data
+            error
           );
           console.error(
             "❌ [FINAL_UPDATE] Error status:",
-            error.response.status
+            error
           );
         }
       }
@@ -412,14 +412,14 @@ const WatchMovie: React.FC<WatchMovieProps> = (props) => {
             "❌ [INITIAL_WATCH] Error creating initial watch history:",
             error
           );
-          if (error.response) {
+          if (error) {
             console.error(
               "❌ [INITIAL_WATCH] Error response:",
-              error.response.data
+              error
             );
             console.error(
               "❌ [INITIAL_WATCH] Error status:",
-              error.response.status
+              error
             );
           }
         }
@@ -530,14 +530,14 @@ const WatchMovie: React.FC<WatchMovieProps> = (props) => {
             "❌ [WATCH_UPDATE] Error updating watch history:",
             error
           );
-          if (error.response) {
+          if (error) {
             console.error(
               "❌ [WATCH_UPDATE] Error response:",
-              error.response.data
+              error
             );
             console.error(
               "❌ [WATCH_UPDATE] Error status:",
-              error.response.status
+              error
             );
           }
         }
@@ -714,11 +714,12 @@ const WatchMovie: React.FC<WatchMovieProps> = (props) => {
       onClick={handleBackdropClick}
     >
       <div
-        ref={modalRef}
-        className="relative w-full h-full max-w-7xl max-h-[95vh] bg-black rounded-lg overflow-hidden shadow-2xl flex flex-col"
-        onMouseMove={handleMouseMove}
-        onClick={(e) => e.stopPropagation()}
-      >
+  ref={modalRef}
+  className="relative w-full h-full max-w-7xl max-h-[95vh] bg-black rounded-lg overflow-hidden shadow-2xl flex flex-col hover:ring-2 hover:ring-red-500 transition-all duration-200 group"
+  onMouseMove={handleMouseMove}
+  onClick={(e) => e.stopPropagation()}
+>
+
         {/* Close Button - Fixed position, always visible */}
         <button
           onClick={(e) => {
@@ -919,53 +920,45 @@ const WatchMovie: React.FC<WatchMovieProps> = (props) => {
                 </button>
               )}
               <button
-                onClick={() => setShowMoreInfo(!showMoreInfo)}
-                className="bg-gray-600 hover:bg-gray-700 text-white px-3 py-2 rounded transition-colors text-sm"
-              >
-                <svg
-                  className="w-4 h-4"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
-                </svg>
-              </button>
+      onClick={() => setShowMoreInfo(!showMoreInfo)}
+      className="bg-purple-600 hover:bg-purple-700  text-white font-bold px-8 py-3 rounded-lg font-semi bold transition-colors"
+    >
+      Interactive Games
+    </button>
             </div>
           </div>
           {showMoreInfo && (
-            <div className="border-t border-gray-700 pt-3 mt-3">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-                <div>
-                  <h4 className="text-white font-semibold mb-1">Genre</h4>
-                  <p className="text-gray-300">
-                    {genre && genre.length > 0
-                      ? genre.join(", ")
-                      : "Action, Drama"}
-                  </p>
-                </div>
-                <div>
-                  <h4 className="text-white font-semibold mb-1">Duration</h4>
-                  <p className="text-gray-300">
-                    {totalDuration
-                      ? `${Math.floor(totalDuration / 60)}h ${
-                          totalDuration % 60
-                        }m`
-                      : "2h 30m"}
-                  </p>
-                </div>
-                <div>
-                  <h4 className="text-white font-semibold mb-1">Director</h4>
-                  <p className="text-gray-300">Christopher Nolan</p>
-                </div>
-                <div>
-                  <h4 className="text-white font-semibold mb-1">Starring</h4>
-                  <p className="text-gray-300">
-                    Leonardo DiCaprio, Marion Cotillard, Tom Hardy
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
+  <div className="border-t border-gray-700 pt-3 mt-3">
+    {/* Genre and Duration section */}
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm mb-6">
+      <div>
+        <h4 className="text-white font-semibold mb-1">Genre</h4>
+        <p className="text-gray-300">
+          {genre && genre.length > 0
+            ? genre.join(", ")
+            : "Action, Drama"}
+        </p>
+      </div>
+      <div>
+        <h4 className="text-white font-semibold mb-1">Duration</h4>
+        <p className="text-gray-300">
+          {totalDuration
+            ? `${Math.floor(totalDuration / 60)}h ${totalDuration % 60}m`
+            : "2h 30m"}
+        </p>
+      </div>
+    </div>
+
+    {/* InteractiveContainer centered */}
+    <div className="flex justify-center">
+      <InteractiveContainer
+        title={title}
+        genre={genre}
+      />
+    </div>
+  </div>
+)}
+
         </div>
       </div>
     </div>
