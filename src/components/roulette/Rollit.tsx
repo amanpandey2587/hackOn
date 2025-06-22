@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import InputForm from './InputForm';
 import RouletteWheel from './RouletteWheel';
 import ResultPanel from './ResultPanel';
-import { useRoulette } from '../hooks/useRoulette';
+import { useRoulette } from '../../hooks/useRoulette';
 
 interface Props {
   goBack: () => void;
