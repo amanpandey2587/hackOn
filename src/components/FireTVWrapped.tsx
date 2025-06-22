@@ -15,7 +15,8 @@ import {
   Heart,
   Zap,
 } from "lucide-react";
-
+import { useNavigate } from "react-router-dom";
+import GenericNavbar from "./GenericNavbar";
 interface WatchData {
   totalHoursWatched: number;
   averageDailyWatch: number;
@@ -495,7 +496,10 @@ const calculateMoodContentPairs = (watchHistory: any[], moodData: any) => {
     <AwardsSlide key="awards" data={wrappedData} />,
     <SummarySlide key="summary" data={wrappedData} />,
   ];
-
+  const navigate=useNavigate()
+  const goHomeHandler = () => {
+    navigate('/');
+  }
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % slides.length);
   };
@@ -516,54 +520,67 @@ const calculateMoodContentPairs = (watchHistory: any[], moodData: any) => {
     );
   }
 
+  
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-black to-blue-900 flex items-center justify-center p-4">
-      <div className="max-w-md w-full">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentSlide}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.5 }}
-            className="bg-black/40 backdrop-blur-lg rounded-3xl p-8 shadow-2xl border border-purple-500/20"
-          >
-            {slides[currentSlide]}
-          </motion.div>
-        </AnimatePresence>
-
-        <div className="flex justify-between items-center mt-6">
-          <button
-            onClick={prevSlide}
-            className="p-3 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
-            disabled={currentSlide === 0}
-          >
-            <ChevronLeft className="w-6 h-6 text-white" />
-          </button>
-
-          <div className="flex gap-2">
-            {slides.map((_, index) => (
-              <div
-                key={index}
-                className={`h-2 rounded-full transition-all ${
-                  index === currentSlide
-                    ? "w-8 bg-purple-500"
-                    : "w-2 bg-white/30"
-                }`}
-              />
-            ))}
+    <div className="max-w-md w-full space-y-4">
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={currentSlide}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          transition={{ duration: 0.5 }}
+          className="bg-black/40 backdrop-blur-lg rounded-3xl p-8 shadow-2xl border border-purple-500/20 space-y-4 relative"
+        >
+          <div className="flex justify-end">
+            <button
+              onClick={goHomeHandler}
+              className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors"
+            >
+              Go to Home
+            </button>
           </div>
-
-          <button
-            onClick={nextSlide}
-            className="p-3 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
-            disabled={currentSlide === slides.length - 1}
-          >
-            <ChevronRight className="w-6 h-6 text-white" />
-          </button>
+  
+          {slides[currentSlide]}
+        </motion.div>
+      </AnimatePresence>
+  
+      <div className="flex justify-between items-center mt-6">
+        <button
+          onClick={prevSlide}
+          className="p-3 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+          disabled={currentSlide === 0}
+        >
+          <ChevronLeft className="w-6 h-6 text-white" />
+        </button>
+  
+        <div className="flex gap-2">
+          {slides.map((_, index) => (
+            <div
+              key={index}
+              className={`h-2 rounded-full transition-all ${
+                index === currentSlide
+                  ? "w-8 bg-purple-500"
+                  : "w-2 bg-white/30"
+              }`}
+            />
+          ))}
         </div>
+  
+        <button
+          onClick={nextSlide}
+          className="p-3 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+          disabled={currentSlide === slides.length - 1}
+        >
+          <ChevronRight className="w-6 h-6 text-white" />
+        </button>
       </div>
     </div>
+  </div>
+  
+
   );
 };
 

@@ -955,7 +955,6 @@ const WatchMovie: React.FC<WatchMovieProps> = (props) => {
 
         </div>
       </div>
-      {/* Interactive Container Modal */}
 <InteractiveContainer
   title={title}
   genre={genre}

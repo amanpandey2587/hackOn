@@ -26,7 +26,7 @@ const Navbar: React.FC = () => {
     { path: '/apple', label: 'Apple TV+', icon: Monitor, color: 'from-gray-600 to-gray-500' },
     { path: '/karoke', label: 'Karoke Studio', icon: MessageCircle, color: 'from-green-500 to-green-400' },
     { path: '/twitch', label: 'Twitch', icon: Smartphone, color: 'from-purple-500 to-purple-400' },
-    { path: '/gaming', label: 'Gaming', icon: Gamepad2, color: 'from-orange-600 to-orange-500' },
+    { path: '/FireTVWrapped', label: 'FireTVWrapped', icon: Gamepad2, color: 'from-orange-600 to-orange-500' },
   ];
   
   const { isChatPanelOpen, toggleChatPanel } = useChatContext();

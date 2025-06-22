@@ -186,12 +186,13 @@ export default function InteractiveContainer({ title, overview, genre, isOpen, o
 
           <button
             onClick={onClose}
-            className="bg-black bg-opacity-60 hover:bg-opacity-80 text-white rounded-full w-10 h-10 flex items-center justify-center transition-all duration-100 hover:scale-110"
+            className="bg-black bg-opacity-60 hover:bg-opacity-80 text-white rounded-full w-10 h-10 flex items-center justify-center transition-all duration-200 hover:scale-110"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
+        {/* Content Area */}
         <div className="flex-1 overflow-hidden">
           {fetchingDetails ? (
             <div className="flex items-center justify-center h-full">
@@ -220,8 +221,10 @@ export default function InteractiveContainer({ title, overview, genre, isOpen, o
               <PredictionGame predictions={predictionData.options} />
             </div>
           ) : (
+            // Home Screen
             <div className="h-full overflow-auto p-6">
               <div className="max-w-6xl mx-auto">
+                {/* Welcome Section */}
                 <div className="text-center mb-12">
                   <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full mb-6">
                     <Film className="w-10 h-10 text-white" />
@@ -235,9 +238,11 @@ export default function InteractiveContainer({ title, overview, genre, isOpen, o
                   </p>
                 </div>
 
+                {/* Game Cards Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                  {/* Poll Game Card */}
                   <div
-                    className="group p-8 cursor-pointer hover:shadow-2xl transition-all duration-100 hover:-translate-y-2 bg-gradient-to-br from-gray-800/80 to-gray-900/80 border border-gray-700 hover:border-purple-500/50 rounded-xl flex flex-col justify-between backdrop-blur-sm hover:bg-gradient-to-br hover:from-purple-900/20 hover:to-pink-900/20"
+                    className="group p-8 cursor-pointer hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 bg-gradient-to-br from-gray-800/80 to-gray-900/80 border border-gray-700 hover:border-purple-500/50 rounded-xl flex flex-col justify-between backdrop-blur-sm hover:bg-gradient-to-br hover:from-purple-900/20 hover:to-pink-900/20"
                     onClick={() => pollData ? setActiveGame('poll') : fetchGameData('poll')}
                   >
                     <div className="text-center flex-grow">
@@ -262,18 +267,18 @@ export default function InteractiveContainer({ title, overview, genre, isOpen, o
                         </div>
                       </div>
                     </div>
-                    <div className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white py-3 rounded-lg text-center font-semibold group-hover:shadow-xl transition-all duration-100 group-hover:scale-105">
+                    <div className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white py-3 rounded-lg text-center font-semibold group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
                       Start Polling
                     </div>
                   </div>
 
                   {/* Quiz Game Card */}
                   <div
-                    className="group p-8 cursor-pointer hover:shadow-2xl transition-all duration-100 hover:-translate-y-2 bg-gradient-to-br from-gray-800/80 to-gray-900/80 border border-gray-700 hover:border-blue-500/50 rounded-xl flex flex-col justify-between backdrop-blur-sm hover:bg-gradient-to-br hover:from-blue-900/20 hover:to-cyan-900/20"
+                    className="group p-8 cursor-pointer hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 bg-gradient-to-br from-gray-800/80 to-gray-900/80 border border-gray-700 hover:border-blue-500/50 rounded-xl flex flex-col justify-between backdrop-blur-sm hover:bg-gradient-to-br hover:from-blue-900/20 hover:to-cyan-900/20"
                     onClick={() => quizData.length > 0 ? setActiveGame('quiz') : fetchGameData('quiz')}
                   >
                     <div className="text-center flex-grow">
-                      <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-100 shadow-lg">
+                      <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg">
                         <Brain className="w-8 h-8 text-white" />
                       </div>
                       <h3 className="text-xl font-bold text-white mb-3 group-hover:text-blue-300 transition-colors">
@@ -301,7 +306,7 @@ export default function InteractiveContainer({ title, overview, genre, isOpen, o
 
                   {/* Prediction Game Card */}
                   <div
-                    className="group p-8 cursor-pointer hover:shadow-2xl transition-all duration-100 hover:-translate-y-2 bg-gradient-to-br from-gray-800/80 to-gray-900/80 border border-gray-700 hover:border-indigo-500/50 rounded-xl flex flex-col justify-between backdrop-blur-sm hover:bg-gradient-to-br hover:from-indigo-900/20 hover:to-purple-900/20"
+                    className="group p-8 cursor-pointer hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 bg-gradient-to-br from-gray-800/80 to-gray-900/80 border border-gray-700 hover:border-indigo-500/50 rounded-xl flex flex-col justify-between backdrop-blur-sm hover:bg-gradient-to-br hover:from-indigo-900/20 hover:to-purple-900/20"
                     onClick={() => predictionData ? setActiveGame('prediction') : fetchGameData('prediction')}
                   >
                     <div className="text-center flex-grow">
@@ -326,7 +331,7 @@ export default function InteractiveContainer({ title, overview, genre, isOpen, o
                         </div>
                       </div>
                     </div>
-                    <div className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white py-3 rounded-lg text-center font-semibold group-hover:shadow-xl transition-all duration-100 group-hover:scale-105">
+                    <div className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white py-3 rounded-lg text-center font-semibold group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
                       Make Predictions
                     </div>
                   </div>
