@@ -107,7 +107,7 @@ export default function InteractiveContainer({ title, overview, genre, isOpen, o
   const fetchGameData = async (game: 'poll' | 'quiz' | 'prediction') => {
     setLoading(true)
     try {
-      const res = await fetch('http://localhost:4000/api/generate-interactive', {
+      const res = await fetch('http://localhost:4001/api/generate-interactive', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 

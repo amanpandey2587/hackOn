@@ -1,5 +1,3 @@
-// backend/services/promptBuilder.ts
-
 interface UserInput {
   mood?: string;
   genre?: string[];
@@ -25,10 +23,22 @@ export const buildPrompt = (
   watchHistory: WatchHistoryItem[]
 ): string => {
   if (mode === 'chaos') {
-    return `Give me a random list of 8 movie or show titles across any genre or language. Be diverse and creative. Only return titles.`;
+    return `Give me exactly 8 random movie or show titles across any genre or language. Be diverse and creative. 
+
+Format your response as a simple numbered list:
+1. Title 1
+2. Title 2
+3. Title 3
+4. Title 4
+5. Title 5
+6. Title 6
+7. Title 7
+8. Title 8
+
+Only return the titles in this exact format, no additional text or explanations.`;
   }
 
-  let prompt = `I want 8 personalized movie or show recommendations.\n`;
+  let prompt = `You are a smart content recommendation system. I need exactly 8 personalized movie or show suggestions based on the following user preferences:\n`;
 
   if (input.mood) prompt += `- Mood: ${input.mood}\n`;
   if (input.genre?.length) prompt += `- Genre: ${input.genre.join(', ')}\n`;
@@ -51,7 +61,17 @@ export const buildPrompt = (
     prompt += `\nUser previously watched:\n${historyText}\n`;
   }
 
-  prompt += `\nOnly return a plain list of 8 titles. No extra explanation.`;
+  prompt += `\nFormat your response as a simple numbered list:
+1. Title 1
+2. Title 2
+3. Title 3
+4. Title 4
+5. Title 5
+6. Title 6
+7. Title 7
+8. Title 8
+
+Only return the titles in this exact format, no additional text or explanations.`;
 
   return prompt;
 };

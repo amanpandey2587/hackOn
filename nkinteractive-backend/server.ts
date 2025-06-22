@@ -72,7 +72,7 @@ app.get('/', (_req, res) => {
   res.send('Gemini AI backend running 👋')
 })
 
-const PORT = 4000
+const PORT = 4001
 app.listen(PORT, () => {
   console.log(`✅ Backend running on http://localhost:${PORT}`)
 })
