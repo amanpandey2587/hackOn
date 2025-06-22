@@ -77,7 +77,8 @@ const WatchMovie: React.FC<WatchMovieProps> = (props) => {
   const controlsTimeoutRef = useRef<number | null>(null);
   const navigate = useNavigate();
   const WATCH_UPDATE_INTERVAL = 15;
-  const [showInteractiveContainer, setShowInteractiveContainer] = useState(false);
+  const [showInteractiveContainer, setShowInteractiveContainer] =
+    useState(false);
   const YOUTUBE_API_KEY = "AIzaSyBGOViLmJSgDLXBIBrb7jpGscpJlUeopd0";
   const addToCache = useCallback((key: string, data: TrailerData) => {
     while (trailerCache.size >= MAX_CACHE_SIZE) {
@@ -360,14 +361,8 @@ const WatchMovie: React.FC<WatchMovieProps> = (props) => {
       } catch (error) {
         console.error("❌ [FINAL_UPDATE] Error updating watch history:", error);
         if (error) {
-          console.error(
-            "❌ [FINAL_UPDATE] Error response:",
-            error
-          );
-          console.error(
-            "❌ [FINAL_UPDATE] Error status:",
-            error
-          );
+          console.error("❌ [FINAL_UPDATE] Error response:", error);
+          console.error("❌ [FINAL_UPDATE] Error status:", error);
         }
       }
     }
@@ -377,7 +372,7 @@ const WatchMovie: React.FC<WatchMovieProps> = (props) => {
     const createInitialWatchHistory = async () => {
       if (!watchHistoryId && movieId) {
         // Only create if we don't have a watchHistoryId yet
-         //console.log("🆕 [INITIAL_WATCH] Creating initial watch history entry");
+        //console.log("🆕 [INITIAL_WATCH] Creating initial watch history entry");
 
         try {
           const initialData = {
@@ -414,14 +409,8 @@ const WatchMovie: React.FC<WatchMovieProps> = (props) => {
             error
           );
           if (error) {
-            console.error(
-              "❌ [INITIAL_WATCH] Error response:",
-              error
-            );
-            console.error(
-              "❌ [INITIAL_WATCH] Error status:",
-              error
-            );
+            console.error("❌ [INITIAL_WATCH] Error response:", error);
+            console.error("❌ [INITIAL_WATCH] Error status:", error);
           }
         }
       }
@@ -532,14 +521,8 @@ const WatchMovie: React.FC<WatchMovieProps> = (props) => {
             error
           );
           if (error) {
-            console.error(
-              "❌ [WATCH_UPDATE] Error response:",
-              error
-            );
-            console.error(
-              "❌ [WATCH_UPDATE] Error status:",
-              error
-            );
+            console.error("❌ [WATCH_UPDATE] Error response:", error);
+            console.error("❌ [WATCH_UPDATE] Error status:", error);
           }
         }
       }, WATCH_UPDATE_INTERVAL * 1000);
@@ -715,12 +698,11 @@ const WatchMovie: React.FC<WatchMovieProps> = (props) => {
       onClick={handleBackdropClick}
     >
       <div
-  ref={modalRef}
-  className="relative w-full h-full max-w-7xl max-h-[95vh] bg-black rounded-lg overflow-hidden shadow-2xl flex flex-col hover:ring-2 hover:ring-red-500 transition-all duration-200 group"
-  onMouseMove={handleMouseMove}
-  onClick={(e) => e.stopPropagation()}
->
-
+        ref={modalRef}
+        className="relative w-full h-full max-w-7xl max-h-[95vh] bg-black rounded-lg overflow-hidden shadow-2xl flex flex-col hover:ring-2 hover:ring-red-500 transition-all duration-200 group"
+        onMouseMove={handleMouseMove}
+        onClick={(e) => e.stopPropagation()}
+      >
         <button
           onClick={(e) => {
             // console.log("Close button clicked directly");
@@ -920,48 +902,46 @@ const WatchMovie: React.FC<WatchMovieProps> = (props) => {
                 </button>
               )}
               <button
-  onClick={() => setShowInteractiveContainer(true)}
-  className="bg-purple-600 hover:bg-purple-700 text-white font-bold px-8 py-3 rounded-lg font-semibold transition-colors"
->
-  Interactive Games
-</button>
+                onClick={() => setShowInteractiveContainer(true)}
+                className="bg-purple-600 hover:bg-purple-700 text-white font-bold px-8 py-3 rounded-lg font-semibold transition-colors"
+              >
+                Interactive Games
+              </button>
             </div>
           </div>
           {showMoreInfo && (
-  <div className="border-t border-gray-700 pt-3 mt-3">
-    {/* Genre and Duration section */}
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm mb-6">
-      <div>
-        <h4 className="text-white font-semibold mb-1">Genre</h4>
-        <p className="text-gray-300">
-          {genre && genre.length > 0
-            ? genre.join(", ")
-            : "Action, Drama"}
-        </p>
-      </div>
-      <div>
-        <h4 className="text-white font-semibold mb-1">Duration</h4>
-        <p className="text-gray-300">
-          {totalDuration
-            ? `${Math.floor(totalDuration / 60)}h ${totalDuration % 60}m`
-            : "2h 30m"}
-        </p>
-      </div>
-    </div>
-
-   
-  </div>
-)}
-
+            <div className="border-t border-gray-700 pt-3 mt-3">
+              {/* Genre and Duration section */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm mb-6">
+                <div>
+                  <h4 className="text-white font-semibold mb-1">Genre</h4>
+                  <p className="text-gray-300">
+                    {genre && genre.length > 0
+                      ? genre.join(", ")
+                      : "Action, Drama"}
+                  </p>
+                </div>
+                <div>
+                  <h4 className="text-white font-semibold mb-1">Duration</h4>
+                  <p className="text-gray-300">
+                    {totalDuration
+                      ? `${Math.floor(totalDuration / 60)}h ${
+                          totalDuration % 60
+                        }m`
+                      : "2h 30m"}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
-<InteractiveContainer
-  title={title}
-  genre={genre}
-  isOpen={showInteractiveContainer}
-  onClose={() => setShowInteractiveContainer(false)}
-/>
-
+      <InteractiveContainer
+        title={title}
+        genre={genre}
+        isOpen={showInteractiveContainer}
+        onClose={() => setShowInteractiveContainer(false)}
+      />
     </div>
   );
 };

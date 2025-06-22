@@ -199,7 +199,6 @@ const MainContainer = ({
   };
 
   const handleCloseWatchMovie = () => {
-    alert("handleCloseWatchMovie was called!"); // This should show an alert
     setIsWatchMovieOpen(false);
   };
 
