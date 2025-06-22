@@ -1,6 +1,6 @@
 // frontend/hooks/useRoulette.ts
 import { useState } from 'react';
-
+import { useUser,useAuth } from '@clerk/clerk-react';
 interface UserInput {
   mood?: string;
   genre?: string[];
@@ -16,6 +16,8 @@ export const useRoulette = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [spinning, setSpinning] = useState(false);
+  const user=useUser();
+  const getToken=useAuth();
 
   const spinWheel = async (
     input: UserInput,

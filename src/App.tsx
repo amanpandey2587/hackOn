@@ -26,6 +26,8 @@ import FireTVWrappedContainer from "./pages/FireTVWrapper";
 import ScrollToTop from "./utils/ScrollToTop";
 import { Search } from "lucide-react";
 import SearchPage from "./components/Search/SearchComponent";
+import RolMain from "./components/roulette/rolMain";
+import Rollit from "./components/roulette/Rollit";
 const AppContent = () => {
   const location = useLocation();
 
@@ -42,6 +44,7 @@ const AppContent = () => {
           <Route path="/FireTVWrapped" element={<FireTVWrappedContainer />} />
           <Route path="/netflix/series" element={<BrowseSeries />} />
           <Route path="/netflix/search" element={<SearchPage/>} />
+          <Route path="/roulette" element={<Rollit goBack={() => window.history.back()} />} />
         </Routes>
         <GlobalChatPanel />
       </div>
