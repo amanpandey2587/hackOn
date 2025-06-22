@@ -20,8 +20,8 @@ Thumbs.db
 *.tsbuildinfo
 
 # Environment files
-# .env
-
+.env
+**/.env
 # Python cache and virtualenv
 __pycache__/
 *.py[cod]
