@@ -267,32 +267,39 @@ const RecommendationBar = () => {
           let additionalData = {};
 
           try {
-            // Search on TVMaze (works for both movies and shows)
-            const tvMazeResponse = await axios.get(
-              `https://api.tvmaze.com/search/shows?q=${encodeURIComponent(
-                result.title
-              )}`
+            // Search on OMDB (works for both movies and shows)
+            const omdbResponse = await axios.get(
+              `http://www.omdbapi.com/?apikey=${
+                import.meta.env.VITE_OMDB_API_KEY
+              }&s=${encodeURIComponent(result.title)}&type=${
+                result.type === "movie" ? "movie" : "series"
+              }`
             );
 
-            if (tvMazeResponse.data && tvMazeResponse.data.length > 0) {
-              const show = tvMazeResponse.data[0].show;
+            if (
+              omdbResponse.data &&
+              omdbResponse.data.Search &&
+              omdbResponse.data.Search.length > 0
+            ) {
+              const item = omdbResponse.data.Search[0];
 
-              // Get poster
-              posterPath = show.image?.original || show.image?.medium;
+              // Get poster (OMDB returns poster URL directly)
+              posterPath = item.Poster !== "N/A" ? item.Poster : null;
 
               // Get additional metadata
               additionalData = {
-                genre: show.genres || result.genre,
-                rating: show.rating?.average || result.rating,
-                year: show.premiered
-                  ? new Date(show.premiered).getFullYear()
-                  : result.year,
-                summary: show.summary, // HTML summary if you want to use it
-                runtime: show.runtime || show.averageRuntime, // in minutes
+                genre: item.Genre ? item.Genre.split(", ") : result.genre,
+                rating:
+                  item.imdbRating && item.imdbRating !== "N/A"
+                    ? parseFloat(item.imdbRating)
+                    : result.rating,
+                year: item.Year ? parseInt(item.Year) : result.year,
+                imdbID: item.imdbID, // Useful for further API calls if needed
+                plot: item.Plot, // Short plot summary
               };
             }
           } catch (error) {
-            console.error("TVMaze error for:", result.title);
+            console.error("OMDB error for:", result.title);
           }
 
           // Fallback to placeholder
@@ -320,7 +327,12 @@ const RecommendationBar = () => {
         })
       );
 
-      setRecommendations(resultsWithPosters);
+
+const validRecommendations = resultsWithPosters.filter(item => 
+  item.poster_path && !item.poster_path.includes('placeholder')
+);
+
+setRecommendations(validRecommendations);
 
       // Cache the results
       localStorage.setItem(
