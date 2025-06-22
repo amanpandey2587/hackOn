@@ -48,68 +48,74 @@ app.get("/", (req, res) => {
 });
 
 // Add this to server.ts
-app.get('/api/debug/all-users', async (req, res) => {
+app.get("/api/debug/all-users", async (req, res) => {
   try {
-    const MoodHistory = mongoose.model('MoodHistory');
-    const WatchHistory = mongoose.model('WatchHistory');
-    
-    const allMoodUsers = await MoodHistory.distinct('userId');
-    const allWatchUsers = await WatchHistory.distinct('userId');
-    
+    const MoodHistory = mongoose.model("MoodHistory");
+    const WatchHistory = mongoose.model("WatchHistory");
+
+    const allMoodUsers = await MoodHistory.distinct("userId");
+    const allWatchUsers = await WatchHistory.distinct("userId");
+
     // Get sample data
     const sampleMood = await MoodHistory.findOne();
     const sampleWatch = await WatchHistory.findOne();
-    
+
     res.json({
       moodHistoryUsers: allMoodUsers,
       watchHistoryUsers: allWatchUsers,
       totalMoodDocs: await MoodHistory.countDocuments(),
       totalWatchDocs: await WatchHistory.countDocuments(),
-      sampleMood: sampleMood ? {
-        userId: sampleMood.userId,
-        moodsCount: sampleMood.moods?.length,
-        id: sampleMood._id
-      } : null,
-      sampleWatch: sampleWatch ? {
-        userId: sampleWatch.userId,
-        title: sampleWatch.title,
-        id: sampleWatch._id
-      } : null
+      sampleMood: sampleMood
+        ? {
+            userId: sampleMood.userId,
+            moodsCount: sampleMood.moods?.length,
+            id: sampleMood._id,
+          }
+        : null,
+      sampleWatch: sampleWatch
+        ? {
+            userId: sampleWatch.userId,
+            title: sampleWatch.title,
+            id: sampleWatch._id,
+          }
+        : null,
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-app.get('/api/debug/db-info', async (req, res) => {
+app.get("/api/debug/db-info", async (req, res) => {
   try {
     const dbName = mongoose.connection.db.databaseName;
-    const collections = await mongoose.connection.db.listCollections().toArray();
-    
+    const collections = await mongoose.connection.db
+      .listCollections()
+      .toArray();
+
     // Check specific user data
     const { userId } = req.query;
     let userData = {};
-    
+
     if (userId) {
-      const MoodHistory = mongoose.model('MoodHistory');
-      const WatchHistory = mongoose.model('WatchHistory');
-      
+      const MoodHistory = mongoose.model("MoodHistory");
+      const WatchHistory = mongoose.model("WatchHistory");
+
       const moodData = await MoodHistory.findOne({ userId });
       const watchData = await WatchHistory.find({ userId });
-      
+
       userData = {
         moodHistoryFound: !!moodData,
         watchHistoryCount: watchData.length,
         moodId: moodData?._id,
-        watchIds: watchData.map(w => w._id)
+        watchIds: watchData.map((w) => w._id),
       };
     }
-    
+
     res.json({
       connected: mongoose.connection.readyState === 1,
       database: dbName,
-      collections: collections.map(c => c.name),
-      userData
+      collections: collections.map((c) => c.name),
+      userData,
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -152,7 +158,24 @@ const startServer = async () => {
     // Other routes
     app.use("/api/parties", partyRoutes);
     app.use("/api/messages", messageRoutes);
-
+    // Add this after all app.use() calls in server.ts
+    console.log("Registered routes:");
+    app._router.stack.forEach((middleware: any) => {
+      if (middleware.route) {
+        console.log(middleware.route.path);
+      } else if (middleware.name === "router") {
+        middleware.handle.stack.forEach((handler: any) => {
+          if (handler.route) {
+            const path = middleware.regexp.source
+              .replace(/\\/g, "")
+              .replace(/\^/, "")
+              .replace(/\$.*/, "")
+              .replace(/\?.*/, "");
+            console.log(`${path}${handler.route.path}`);
+          }
+        });
+      }
+    });
     // Start the server
     server.listen(4000, () => {
       console.log("✅ Server running on http://localhost:4000");

@@ -1,177 +1,234 @@
-import express from 'express';
-import multer from 'multer';
-import fs from 'fs';
-import path from 'path';
-import { requireAuth } from '@clerk/express';
-import { MoodService } from '../services/moodService';
+import express from "express";
+import multer from "multer";
+import fs from "fs";
+import path from "path";
+import { requireAuth } from "@clerk/express";
+import { MoodService } from "../services/moodService";
 
 const router = express.Router();
 
-const uploadsDir = path.join(__dirname, 'uploads');
+const uploadsDir = path.join(__dirname, "uploads");
 if (!fs.existsSync(uploadsDir)) {
-    fs.mkdirSync(uploadsDir, { recursive: true });
+  fs.mkdirSync(uploadsDir, { recursive: true });
+  console.log("[INIT] Created uploads directory at:", uploadsDir);
 }
 
 const storage = multer.memoryStorage();
 const upload = multer({
-    storage: storage,
-    limits: {
-        fileSize: 10 * 1024 * 1024,
-    },
-    fileFilter: (req: any, file: any, cb: any) => {
-        if (file.mimetype.startsWith('audio/')) {
-            cb(null, true);
-        } else {
-            cb(new Error('Only audio files are allowed!'), false);
-        }
+  storage: storage,
+  limits: {
+    fileSize: 10 * 1024 * 1024,
+  },
+  fileFilter: (req: any, file: any, cb: any) => {
+    console.log("[MULTER] Validating file:", {
+      originalName: file.originalname,
+      mimeType: file.mimetype,
+      size: file.size,
+    });
+
+    if (file.mimetype.startsWith("audio/")) {
+      cb(null, true);
+    } else {
+      console.error(
+        "[MULTER] File rejected - not an audio file:",
+        file.mimetype
+      );
+      cb(new Error("Only audio files are allowed!"), false);
     }
+  },
 });
 
-// Main endpoint for audio analysis and mood detection
-// Temporarily change this line:
-// router.post('/getAudio', requireAuth(), upload.single('audio'), async (req: any, res: any) => {
-// to this
-router.post('/getAudio', upload.single('audio'), async (req: any, res: any) => {   
-    if (!req.auth) {
-        req.auth = { userId: 'test-user-123' };
-    }
-    // ... rest of your code
+// Add requireAuth() middleware to protect the route
+router.post(
+  "/getAudio",
+  requireAuth(),
+  upload.single("audio"),
+  async (req: any, res: any) => {
+    const requestId = Date.now(); // For tracking this specific request in logs
+    console.log(`[REQUEST-${requestId}] POST /getAudio initiated`);
+
     try {
-        const audioFile = req.file;
-        const userId = req.auth.userId; // From Clerk authentication
-        
-        if (!audioFile) {
-            return res.status(400).json({
-                success: false,
-                message: "No audio file found"
-            });
-        }
+      const audioFile = req.file;
+      const userId = req.auth?.userId; // From Clerk authentication
 
-        // Save the file temporarily
-        const timestamp = Date.now();
-        const fileExtension = '.wav'; // Ensure it's WAV for the model
-        const fileName = `audio_${timestamp}_${userId}.wav`;
-        const filePath = path.join(uploadsDir, fileName);
+      console.log(`[REQUEST-${requestId}] User authenticated:`, {
+        userId,
+        sessionId: req.auth?.sessionId,
+      });
 
-        fs.writeFileSync(filePath, audioFile.buffer);
+      if (!userId) {
+        console.error(`[REQUEST-${requestId}] No user ID found in auth`);
+        return res.status(401).json({
+          success: false,
+          message: "Unauthorized - no user ID found",
+        });
+      }
 
-        console.log('Audio file received:', {
-            userId,
-            savedAs: fileName,
+      if (!audioFile) {
+        console.error(`[REQUEST-${requestId}] No audio file in request`);
+        return res.status(400).json({
+          success: false,
+          message: "No audio file found",
+        });
+      }
+
+      console.log(`[REQUEST-${requestId}] Audio file received:`, {
+        originalName: audioFile.originalname,
+        mimeType: audioFile.mimetype,
+        size: `${(audioFile.size / 1024).toFixed(2)} KB`,
+      });
+
+      // Save the file temporarily
+      const timestamp = Date.now();
+      const fileExtension = ".wav"; // Ensure it's WAV for the model
+      const fileName = `audio_${timestamp}_${userId}.wav`;
+      const filePath = path.join(uploadsDir, fileName);
+
+      console.log(`[REQUEST-${requestId}] Saving file to:`, filePath);
+      fs.writeFileSync(filePath, audioFile.buffer);
+      console.log(`[REQUEST-${requestId}] File saved successfully`);
+
+      try {
+        // Analyze mood using Python API
+        console.log(`[REQUEST-${requestId}] Starting mood analysis...`);
+        const moodAnalysis = await MoodService.analyzeAudioMood(filePath);
+        console.log(
+          `[REQUEST-${requestId}] Mood analysis completed:`,
+          moodAnalysis
+        );
+
+        // Save mood to database
+        console.log(`[REQUEST-${requestId}] Saving mood to database...`);
+        const moodHistory = await MoodService.saveMoodForUser(
+          userId,
+          moodAnalysis
+        );
+        console.log(`[REQUEST-${requestId}] Mood saved to database`);
+
+        // Clean up the temporary file
+        fs.unlinkSync(filePath);
+        console.log(`[REQUEST-${requestId}] Temporary file cleaned up`);
+
+        console.log(`[REQUEST-${requestId}] Request completed successfully`);
+        return res.json({
+          success: true,
+          message: "Audio analyzed and mood detected successfully",
+          mood: {
+            current: moodAnalysis,
+            history: moodHistory.aggregatedMoodData,
+          },
+          fileInfo: {
+            originalName: audioFile.originalname,
+            mimeType: audioFile.mimetype,
             size: audioFile.size,
+          },
         });
+      } catch (analysisError) {
+        console.error(
+          `[REQUEST-${requestId}] Error during mood analysis:`,
+          analysisError
+        );
 
-        try {
-            // Analyze mood using Python API
-            const moodAnalysis = await MoodService.analyzeAudioMood(filePath);
-            
-            // Save mood to database
-            const moodHistory = await MoodService.saveMoodForUser(userId, moodAnalysis);
-            
-            // Clean up the temporary file
-            fs.unlinkSync(filePath);
-
-            return res.json({
-                success: true,
-                message: "Audio analyzed and mood detected successfully",
-                mood: {
-                    current: moodAnalysis,
-                    history: moodHistory.aggregatedMoodData,
-                },
-                fileInfo: {
-                    originalName: audioFile.originalname,
-                    mimeType: audioFile.mimetype,
-                    size: audioFile.size,
-                }
-            });
-
-        } catch (analysisError) {
-            // Clean up file on error
-            if (fs.existsSync(filePath)) {
-                fs.unlinkSync(filePath);
-            }
-            
-            console.error("Error analyzing mood:", analysisError);
-            return res.status(500).json({
-                success: false,
-                message: "Error analyzing mood from audio",
-                error: analysisError instanceof Error ? analysisError.message : 'Unknown error'
-            });
+        // Clean up file on error
+        if (fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath);
+          console.log(`[REQUEST-${requestId}] Cleaned up file after error`);
         }
 
-    } catch (error) {
-        console.error("Error processing audio:", error);
         return res.status(500).json({
-            success: false,
-            message: "Error occurred while processing the audio file",
-            error: error instanceof Error ? error.message : 'Unknown error'
+          success: false,
+          message: "Error analyzing mood from audio",
+          error:
+            analysisError instanceof Error
+              ? analysisError.message
+              : "Unknown error",
         });
+      }
+    } catch (error) {
+      console.error(`[REQUEST-${requestId}] Unexpected error:`, error);
+      return res.status(500).json({
+        success: false,
+        message: "Error occurred while processing the audio file",
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
     }
-});
+  }
+);
 
 // Get mood history for a user
-router.get('/mood-history', requireAuth(), async (req: any, res: any) => {
-    try {
-        const userId = req.auth.userId;
-        const limit = parseInt(req.query.limit) || 50;
-        
-        const moodHistory = await MoodService.getUserMoodHistory(userId, limit);
-        
-        return res.json({
-            success: true,
-            data: moodHistory,
-        });
-        
-    } catch (error) {
-        console.error("Error fetching mood history:", error);
-        return res.status(500).json({
-            success: false,
-            message: "Error fetching mood history",
-            error: error instanceof Error ? error.message : 'Unknown error'
-        });
-    }
+router.get("/mood-history", requireAuth(), async (req: any, res: any) => {
+  const requestId = Date.now();
+  console.log(`[REQUEST-${requestId}] GET /mood-history initiated`);
+
+  try {
+    const userId = req.auth?.userId;
+    const limit = parseInt(req.query.limit) || 50;
+
+    console.log(`[REQUEST-${requestId}] Fetching mood history:`, {
+      userId,
+      limit,
+    });
+
+    const moodHistory = await MoodService.getUserMoodHistory(userId, limit);
+
+    console.log(`[REQUEST-${requestId}] Mood history fetched:`, {
+      userId,
+      recordsFound: moodHistory?.length || 0,
+    });
+
+    return res.json({
+      success: true,
+      data: moodHistory,
+    });
+  } catch (error) {
+    console.error(`[REQUEST-${requestId}] Error fetching mood history:`, error);
+    return res.status(500).json({
+      success: false,
+      message: "Error fetching mood history",
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
 });
 
 // Get mood statistics for a user
-router.get('/mood-stats', requireAuth(), async (req: any, res: any) => {
-    try {
-        const userId = req.auth.userId;
-        const moodHistory = await MoodService.getUserMoodHistory(userId);
-        
-        if (!moodHistory.aggregatedData) {
-            return res.json({
-                success: true,
-                data: {
-                    hasData: false,
-                    message: "No mood data available yet"
-                }
-            });
-        }
-        
-        return res.json({
-            success: true,
-            data: {
-                hasData: true,
-                stats: moodHistory.aggregatedData,
-                totalMoods: moodHistory.moods.length,
-            }
-        });
-        
-    } catch (error) {
-        console.error("Error fetching mood stats:", error);
-        return res.status(500).json({
-            success: false,
-            message: "Error fetching mood statistics",
-            error: error instanceof Error ? error.message : 'Unknown error'
-        });
+router.get("/mood-stats", requireAuth(), async (req: any, res: any) => {
+  try {
+    const userId = req.auth.userId;
+    const moodHistory = await MoodService.getUserMoodHistory(userId);
+
+    if (!moodHistory.aggregatedData) {
+      return res.json({
+        success: true,
+        data: {
+          hasData: false,
+          message: "No mood data available yet",
+        },
+      });
     }
+
+    return res.json({
+      success: true,
+      data: {
+        hasData: true,
+        stats: moodHistory.aggregatedData,
+        totalMoods: moodHistory.moods.length,
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching mood stats:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error fetching mood statistics",
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
 });
 
-const GEMINI_API_KEY = 'AIzaSyBcPpCYJHla0P42ImAWTfqlKzW7mAu5UrA';
+const GEMINI_API_KEY = "AIzaSyBcPpCYJHla0P42ImAWTfqlKzW7mAu5UrA";
 
-router.post('/gemini/movie-search', async (req:any, res:any) => {
-    console.log("Etered the function in backend ")
-  const { searchTerm,languageName } = req.body;
+router.post("/gemini/movie-search", async (req: any, res: any) => {
+  console.log("Etered the function in backend ");
+  const { searchTerm, languageName } = req.body;
 
   const prompt = `
 You are an expert entertainment database assistant. Help users find movies, TV shows, documentaries, and songs by providing accurate names and IMDB IDs.
@@ -221,38 +278,44 @@ Important:
 `;
 
   try {
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{
-          parts: [{
-            text: prompt
-          }]
-        }]
-      })
-    });
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                {
+                  text: prompt,
+                },
+              ],
+            },
+          ],
+        }),
+      }
+    );
 
     const data = await response.json();
-    console.log("Data in the backend is",data);
+    console.log("Data in the backend is", data);
     const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
 
     if (text) {
-      const cleanedText = text.replace(/```json\s*|\s*```/g, '').trim();
+      const cleanedText = text.replace(/```json\s*|\s*```/g, "").trim();
       const jsonMatch = cleanedText.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         const parsed = JSON.parse(jsonMatch[0]);
-        res.json({status:200,message:"Success",parsed});
+        res.json({ status: 200, message: "Success", parsed });
         return;
       }
     }
 
-    res.status(500).json({ error: 'Invalid response from Gemini' });
+    res.status(500).json({ error: "Invalid response from Gemini" });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Gemini API failed' });
+    res.status(500).json({ error: "Gemini API failed" });
   }
 });
-
 
 export default router;
