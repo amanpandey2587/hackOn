@@ -77,7 +77,7 @@ const WatchSeries: React.FC<WatchSeriesProps> = ({ isOpen, onClose, show, initia
   const { getToken } = useAuth();
   const playerRef = useRef<HTMLDivElement>(null);
   const controlsTimeoutRef = useRef<number | null>(null);
-  
+  const [showInteractiveContainer, setShowInteractiveContainer] = useState(false);
   const WATCH_UPDATE_INTERVAL = 15;
   const YOUTUBE_API_KEY = "AIzaSyBGOViLmJSgDLXBIBrb7jpGscpJlUeopd0";
 
@@ -743,28 +743,25 @@ const WatchSeries: React.FC<WatchSeriesProps> = ({ isOpen, onClose, show, initia
     </button>
 
     <button
-      onClick={() => setShowMoreInfo(!showMoreInfo)}
-      className="bg-purple-600 hover:bg-purple-700  text-white font-bold px-8 py-3 rounded-lg font-semi bold transition-colors"
-    >
-      Interactive Games
-    </button>
+  onClick={() => setShowInteractiveContainer(true)}
+  className="bg-purple-600 hover:bg-purple-700 text-white font-bold px-8 py-3 rounded-lg font-semibold transition-colors"
+>
+  Interactive Games
+</button>
   </div>
 
-  {/* Interactive Games below buttons */}
-  {showMoreInfo && (
-    <div className="border-t border-gray-700 pt-3 mt-3 w-full flex justify-center">
-      <InteractiveContainer
-        title={show.title}
-        // genre={show.genre}
-      />
-    </div>
-  )}
 </div>
 
             </div>
           </div>
         </div>
       </div>
+      <InteractiveContainer
+  title={show.title}
+  genre={show.genre}
+  isOpen={showInteractiveContainer}
+  onClose={() => setShowInteractiveContainer(false)}
+/>
     </div>
   );
 };

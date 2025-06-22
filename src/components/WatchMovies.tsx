@@ -33,11 +33,11 @@ const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
 const MAX_CACHE_SIZE = 100;
 const WatchMovie: React.FC<WatchMovieProps> = (props) => {
   // Log raw props BEFORE destructuring
-  console.log("=== WatchMovie Raw Props Debug ===");
-  console.log("Raw props object:", props);
-  console.log("Props keys:", Object.keys(props));
-  console.log("props.onClose directly:", props.onClose);
-  console.log("Is onClose in props?", "onClose" in props);
+  // console.log("=== WatchMovie Raw Props Debug ===");
+  // console.log("Raw props object:", props);
+  // console.log("Props keys:", Object.keys(props));
+  // console.log("props.onClose directly:", props.onClose);
+  // console.log("Is onClose in props?", "onClose" in props);
 
   // Now destructure
   const {
@@ -52,9 +52,9 @@ const WatchMovie: React.FC<WatchMovieProps> = (props) => {
     genre,
   } = props;
 
-  console.log("=== After Destructuring ===");
-  console.log("onClose:", onClose);
-  console.log("onClose type:", typeof onClose);
+  // console.log("=== After Destructuring ===");
+  // console.log("onClose:", onClose);
+  // console.log("onClose type:", typeof onClose);
 
   const dispatch = useDispatch();
   // ... rest of your component
@@ -77,6 +77,7 @@ const WatchMovie: React.FC<WatchMovieProps> = (props) => {
   const controlsTimeoutRef = useRef<number | null>(null);
   const navigate = useNavigate();
   const WATCH_UPDATE_INTERVAL = 15;
+  const [showInteractiveContainer, setShowInteractiveContainer] = useState(false);
   const YOUTUBE_API_KEY = "AIzaSyBGOViLmJSgDLXBIBrb7jpGscpJlUeopd0";
   const addToCache = useCallback((key: string, data: TrailerData) => {
     while (trailerCache.size >= MAX_CACHE_SIZE) {
@@ -136,7 +137,7 @@ const WatchMovie: React.FC<WatchMovieProps> = (props) => {
         },
         events: {
           onReady: (event: any) => {
-            console.log("Player ready");
+            // console.log("Player ready");
             setIsPlayerReady(true);
             setPlayer(event.target);
             event.target.setVolume(volume * 100);
@@ -312,21 +313,21 @@ const WatchMovie: React.FC<WatchMovieProps> = (props) => {
     ]
   );
   const handleClose = useCallback(async () => {
-    console.log("handleClose called");
-    console.log("props.onClose:", props.onClose);
-    console.log("typeof props.onClose:", typeof props.onClose);
+    // console.log("handleClose called");
+    // console.log("props.onClose:", props.onClose);
+    // console.log("typeof props.onClose:", typeof props.onClose);
 
     // Update watch history if all conditions are met
     if (player && isPlayerReady && movieId) {
       // Use movieId from props
       const finalTime = player.getCurrentTime();
 
-      console.log("🏁 [FINAL_UPDATE] Sending final watch update:", {
-        movieId: movieId,
-        finalTime: finalTime,
-        totalDuration: totalDuration,
-        finalPercentage: Math.round((finalTime / totalDuration) * 100),
-      });
+      // console.log("🏁 [FINAL_UPDATE] Sending final watch update:", {
+      //   movieId: movieId,
+      //   finalTime: finalTime,
+      //   totalDuration: totalDuration,
+      //   finalPercentage: Math.round((finalTime / totalDuration) * 100),
+      // });
 
       try {
         // Send complete data to create/update endpoint using props data
@@ -342,20 +343,20 @@ const WatchMovie: React.FC<WatchMovieProps> = (props) => {
           streamingPlatform: "Netflix", // or whatever platform you're using
         };
 
-        console.log(
-          "📤 [FINAL_UPDATE] Sending final update data:",
-          finalUpdateData
-        );
+        // console.log(
+        //   "📤 [FINAL_UPDATE] Sending final update data:",
+        //   finalUpdateData
+        // );
 
         const response = await axios.post(
           "/api/watch-history",
           finalUpdateData
         );
 
-        console.log(
-          "✅ [FINAL_UPDATE] Final watch history updated successfully:",
-          response.data
-        );
+        // console.log(
+        //   "✅ [FINAL_UPDATE] Final watch history updated successfully:",
+        //   response.data
+        // );
       } catch (error) {
         console.error("❌ [FINAL_UPDATE] Error updating watch history:", error);
         if (error) {
@@ -376,7 +377,7 @@ const WatchMovie: React.FC<WatchMovieProps> = (props) => {
     const createInitialWatchHistory = async () => {
       if (!watchHistoryId && movieId) {
         // Only create if we don't have a watchHistoryId yet
-        console.log("🆕 [INITIAL_WATCH] Creating initial watch history entry");
+         //console.log("🆕 [INITIAL_WATCH] Creating initial watch history entry");
 
         try {
           const initialData = {
@@ -720,10 +721,9 @@ const WatchMovie: React.FC<WatchMovieProps> = (props) => {
   onClick={(e) => e.stopPropagation()}
 >
 
-        {/* Close Button - Fixed position, always visible */}
         <button
           onClick={(e) => {
-            console.log("Close button clicked directly");
+            // console.log("Close button clicked directly");
             e.stopPropagation();
             handleClose();
           }}
@@ -920,11 +920,11 @@ const WatchMovie: React.FC<WatchMovieProps> = (props) => {
                 </button>
               )}
               <button
-      onClick={() => setShowMoreInfo(!showMoreInfo)}
-      className="bg-purple-600 hover:bg-purple-700  text-white font-bold px-8 py-3 rounded-lg font-semi bold transition-colors"
-    >
-      Interactive Games
-    </button>
+  onClick={() => setShowInteractiveContainer(true)}
+  className="bg-purple-600 hover:bg-purple-700 text-white font-bold px-8 py-3 rounded-lg font-semibold transition-colors"
+>
+  Interactive Games
+</button>
             </div>
           </div>
           {showMoreInfo && (
@@ -949,18 +949,20 @@ const WatchMovie: React.FC<WatchMovieProps> = (props) => {
       </div>
     </div>
 
-    {/* InteractiveContainer centered */}
-    <div className="flex justify-center">
-      <InteractiveContainer
-        title={title}
-        genre={genre}
-      />
-    </div>
+   
   </div>
 )}
 
         </div>
       </div>
+      {/* Interactive Container Modal */}
+<InteractiveContainer
+  title={title}
+  genre={genre}
+  isOpen={showInteractiveContainer}
+  onClose={() => setShowInteractiveContainer(false)}
+/>
+
     </div>
   );
 };
