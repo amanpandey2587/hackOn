@@ -10,7 +10,7 @@ import type {
 } from '../types/streaming';
 
 const API_BASE_URL = 'https://api.watchmode.com/v1';
-const API_KEY = import.meta.env.WATCHMODE_API_KEY || '5IuepmguYwWWqFbgZI40c6dcv4iEAvhwBKGI85zH';
+const API_KEY = import.meta.env.VITE_WATCHMODE_API_KEY;
 
 const initialState: MainContentState = {
   content: [],

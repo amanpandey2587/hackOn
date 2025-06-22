@@ -79,7 +79,7 @@ const WatchMovie: React.FC<WatchMovieProps> = (props) => {
   const WATCH_UPDATE_INTERVAL = 15;
   const [showInteractiveContainer, setShowInteractiveContainer] =
     useState(false);
-  const YOUTUBE_API_KEY = "AIzaSyBGOViLmJSgDLXBIBrb7jpGscpJlUeopd0";
+  const YOUTUBE_API_KEY = import.meta.env.VITE_YOUTUBE_API_KEY;
   const addToCache = useCallback((key: string, data: TrailerData) => {
     while (trailerCache.size >= MAX_CACHE_SIZE) {
       const firstKey = trailerCache.keys().next().value || "string";
@@ -182,7 +182,7 @@ const WatchMovie: React.FC<WatchMovieProps> = (props) => {
       const year = new Date(releaseDate).getFullYear();
       if (
         !YOUTUBE_API_KEY ||
-        YOUTUBE_API_KEY !== "AIzaSyBGOViLmJSgDLXBIBrb7jpGscpJlUeopd0"
+        YOUTUBE_API_KEY !== import.meta.env.VITE_YOUTUBE_API_KEY
       ) {
         const mockTrailers = [
           {

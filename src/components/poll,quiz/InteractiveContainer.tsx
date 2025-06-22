@@ -38,7 +38,7 @@ export default function InteractiveContainer({ title, overview, genre, isOpen, o
       if (!overview && title && isOpen) {
         setFetchingDetails(true)
         try {
-          const response = await fetch(`https://www.omdbapi.com/?t=${encodeURIComponent(title)}&apikey=cb427cd4`)
+          const response = await fetch(`https://www.omdbapi.com/?t=${encodeURIComponent(title)}&apikey=${import.meta.env.VITE_OMDB_API_KEY}`);
           const data = await response.json()
           console.log("Interactive container frontend data")
           if (data.Response === 'True') {

@@ -132,7 +132,7 @@ const cache = {
   },
 };
 
-const WATCHMODE_API_KEY = '5IuepmguYwWWqFbgZI40c6dcv4iEAvhwBKGI85zH';
+const WATCHMODE_API_KEY = import.meta.env.VITE_WATCHMODE_API_KEY;
 const WATCHMODE_BASE_URL = 'https://api.watchmode.com/v1';
 
 const BrowseGenre: React.FC = () => {

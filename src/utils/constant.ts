@@ -17,7 +17,7 @@ export const options = {
 export const TMDB_IMG_URL = "https://image.tmdb.org/t/p/w500";
 
 
-export const WATCHMODE_API_KEY = "5IuepmguYwWWqFbgZI40c6dcv4iEAvhwBKGI85zH";
+export const WATCHMODE_API_KEY = import.meta.env.VITE_WATCHMODE_API_KEY;
 export const WATCHMODE_BASE_URL = "https://api.watchmode.com/v1";
 
 // Netflix Section - ACTUAL Netflix content only (source_ids=203 is Netflix)

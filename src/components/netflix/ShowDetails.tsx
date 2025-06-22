@@ -78,7 +78,7 @@ const ShowDetails: React.FC<ShowDetailsProps> = ({ isOpen, onClose, show }) => {
   const controlsTimeoutRef = useRef<number | null>(null);
   
   const WATCH_UPDATE_INTERVAL = 15;
-  const YOUTUBE_API_KEY = "AIzaSyBGOViLmJSgDLXBIBrb7jpGscpJlUeopd0";
+  const YOUTUBE_API_KEY = import.meta.env.VITE_YOUTUBE_API_KEY;
   
   const { detailedShow, seasons, episodes, loading, error } = useShowDetails(
     show.tvmazeId?.toString() || ''
