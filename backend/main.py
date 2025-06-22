@@ -410,21 +410,9 @@ IMPORTANT RULES:
 
 Output Format — JSON array only:
 [
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
   {{"query": "action", "reason": "popular genre", "priority": 8}},
   {{"query": "comedy", "reason": "mood boost", "priority": 7}},
   {{"query": "thriller", "reason": "evening entertainment", "priority": 6}}
-=======
-  {"query": "action", "reason": "popular genre", "priority": 8},
-  {"query": "comedy", "reason": "mood boost", "priority": 7},
-  {"query": "thriller", "reason": "evening entertainment", "priority": 6}
->>>>>>> Stashed changes
-=======
-  {"query": "action", "reason": "popular genre", "priority": 8},
-  {"query": "comedy", "reason": "mood boost", "priority": 7},
-  {"query": "thriller", "reason": "evening entertainment", "priority": 6}
->>>>>>> Stashed changes
 ]
 """
         )

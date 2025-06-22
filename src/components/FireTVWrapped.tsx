@@ -971,7 +971,7 @@ const generateYearSummary = (data: WrappedData): string => {
   const mood = moodData.dominantMood.toLowerCase();
 
   const summaries = [
-    `2024 was all about ${topGenre} marathons and ${mood} vibes!`,
+    `2025 was all about ${topGenre} marathons and ${mood} vibes!`,
     `You spent ${watchData.totalHoursWatched} hours exploring ${topGenre} while feeling ${mood}.`,
     `A year of ${watchData.mostActiveTimeOfDay.toLowerCase()} binges and ${topGenre} discoveries!`,
     `${watchData.newTitlesDiscovered} new adventures, mostly ${topGenre}, all while ${mood}.`,
